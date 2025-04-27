@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { AiOutlineUser, AiOutlineLock, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // Import ikon mata
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook } from 'react-icons/fa';
+import Link from "next/link";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false); // State untuk mengatur visibilitas password
@@ -52,12 +53,12 @@ function Login() {
               </button>
             </div>
           </div>
-          <button
+          <Link
+            href="/dashboard"
             className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition duration-150 ease-in-out w-full"
-            type="button"
           >
             Sign In
-          </button>
+          </Link>
           <div className="mt-6 relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
