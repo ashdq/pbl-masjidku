@@ -133,6 +133,11 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold mb-16">Fitur Unggulan</h2>
           <div className="grid md:grid-cols-3 gap-10">
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 ease-in-out">
+            <img 
+              src="/Manajemen Keuangan.png" 
+              alt="Manajemen Keuangan" 
+              className="w-80 h-50 mx-auto mb-4"
+            />
               <h3 className="text-xl font-semibold mb-4">Manajemen Keuangan Terpusat</h3>
               <p className="leading-relaxed">
                 Catat setiap pemasukan dan pengeluaran secara detail dan
@@ -140,6 +145,11 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 ease-in-out">
+            <img 
+              src="/realtime2.png" 
+              alt="realtime2" 
+              className="w-110 h-50 mx-auto mb-4"
+            />
               <h3 className="text-xl font-semibold mb-4">Laporan Keuangan Real-time</h3>
               <p className="leading-relaxed">
                 Akses laporan keuangan masjid kapan saja dan di mana saja dengan
@@ -147,6 +157,11 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 ease-in-out">
+            <img 
+              src="/qr.png" 
+              alt="qr" 
+              className="w-110 h-50 mx-auto mb-4"
+            />
               <h3 className="text-xl font-semibold mb-4">Donasi Digital dengan QR Code</h3>
               <p className="leading-relaxed">
                 Permudah jamaah berdonasi melalui berbagai platform pembayaran

@@ -128,84 +128,127 @@ export default function Dashboard() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className={`p-5 ${secondaryGray} ${rounded} ${shadow}`}>
-                    <p className={`text-sm ${textSecondary}`}>Total Zakat Bulan Ini</p>
-                    <h2 className={`text-2xl font-bold ${textPrimary}`}>Rp {staticMasjidInfo.totalZakatBulanIni.toLocaleString('id-ID')}</h2>
-                </div>
+            <div className="p-6 bg-gradient-to-br from-green-100 to-white rounded-lg shadow-lg text-center">
+            <h2 className="text-xl font-bold text-center text-green-700 mb-6">Total Zakat Bulan Ini</h2>
+            <h2 className="text-2xl font-bold text-green-700">
+                Rp {staticMasjidInfo.totalZakatBulanIni.toLocaleString('id-ID')}
+            </h2>
+            </div>
+
 
                 {/* Kegiatan Masjid Carousel */}
-                <div className={`p-5 ${secondaryGray} ${rounded} ${shadow}`}>
-                    <div className="relative mt-4">
-                    <div className="overflow-hidden rounded-md">
-                    <div className="relative w-full">
-                        <img
-                            src={staticMasjidInfo.kegiatanMasjid[currentSlide].image}
-                            alt={staticMasjidInfo.kegiatanMasjid[currentSlide].title}
-                            className="w-full h-64 object-cover rounded-md transition-all duration-500"
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 rounded-b-md">
-                                <p className="text-white text-lg font-semibold">
-                                    {staticMasjidInfo.kegiatanMasjid[currentSlide].title}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <div className="p-6 bg-gradient-to-br from-green-100 to-white rounded-lg shadow-lg mb-8">
+                <h2 className="text-xl font-bold text-green-700 text-center mb-6">Kegiatan</h2>
 
-                        <div className="absolute top-1/2 left-2 transform -translate-y-1/2">
-                            <button onClick={handlePrev} className="bg-gray-300 text-gray-700 p-2 rounded-full hover:bg-gray-400 transition-colors">
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="absolute top-1/2 right-2 transform -translate-y-1/2">
-                            <button onClick={handleNext} className="bg-gray-300 text-gray-700 p-2 rounded-full hover:bg-gray-400 transition-colors">
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="flex justify-center mt-3 space-x-2">
-                            {staticMasjidInfo.kegiatanMasjid.map((_, index) => (
-                                <button
-                                    key={index}
-                                    className={`w-3 h-3 rounded-full ${currentSlide === index ? primaryGreen : 'bg-gray-300'}`}
-                                    onClick={() => setCurrentSlide(index)}
-                                ></button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className={`p-5 ${secondaryGray} ${rounded} ${shadow}`}>
-                    <p className={`text-sm ${textSecondary}`}>Jadwal Adzan</p>
-                    <div className="grid grid-cols-2 gap-2">
-                        <p className={`text-sm ${textPrimary}`}>Subuh:</p><p className={`text-sm ${textSecondary}`}>{staticMasjidInfo.jadwalAdzan?.subuh}</p>
-                        <p className={`text-sm ${textPrimary}`}>Dzuhur:</p><p className={`text-sm ${textSecondary}`}>{staticMasjidInfo.jadwalAdzan?.dzuhur}</p>
-                        <p className={`text-sm ${textPrimary}`}>Ashar:</p><p className={`text-sm ${textSecondary}`}>{staticMasjidInfo.jadwalAdzan?.ashar}</p>
-                        <p className={`text-sm ${textPrimary}`}>Maghrib:</p><p className={`text-sm ${textSecondary}`}>{staticMasjidInfo.jadwalAdzan?.maghrib}</p>
-                        <p className={`text-sm ${textPrimary}`}>Isya:</p><p className={`text-sm ${textSecondary}`}>{staticMasjidInfo.jadwalAdzan?.isya}</p>
-                    </div>
+            <div className="relative">
+            <div className="overflow-hidden rounded-lg">
+            <div className="relative w-full">
+                <img
+                    src={staticMasjidInfo.kegiatanMasjid[currentSlide].image}
+                    alt={staticMasjidInfo.kegiatanMasjid[currentSlide].title}
+                    className="w-full h-[300px] object-cover rounded-lg transition-all duration-500"
+                />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 rounded-b-lg">
+                <p className="text-white text-lg font-semibold">
+                    {staticMasjidInfo.kegiatanMasjid[currentSlide].title}
+                </p>
                 </div>
             </div>
+    </div>
+
+        {/* Tombol Kiri */}
+        <div className="absolute top-1/2 left-3 transform -translate-y-1/2">
+            <button onClick={handlePrev} className="bg-white text-green-700 p-2 rounded-full shadow hover:bg-green-100 transition">
+                <ChevronLeft className="w-5 h-5" />
+            </button>
+        </div>
+
+            {/* Tombol Kanan */}
+            <div className="absolute top-1/2 right-3 transform -translate-y-1/2">
+                <button onClick={handleNext} className="bg-white text-green-700 p-2 rounded-full shadow hover:bg-blgreenue-100 transition">
+                <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
+
+                {/* Indicator */}
+                <div className="flex justify-center mt-4 space-x-2">
+                    {staticMasjidInfo.kegiatanMasjid.map((_, index) => (
+                <button
+                key={index}
+                className={`w-3 h-3 rounded-full ${currentSlide === index ? 'bg-green-500' : 'bg-gray-300'}`}
+                onClick={() => setCurrentSlide(index)}
+                ></button>
+                ))}   
+                </div>
+            </div>
+        </div>
+
+
+        <div className="p-6 bg-gradient-to-br from-green-100 to-white rounded-lg shadow-lg">
+  <h2 className="text-xl font-bold text-center text-green-700 mb-6">Jadwal Adzan</h2>
+
+        <div className="overflow-x-auto">
+            <table className="w-full text-sm text-gray-800">
+            <thead>
+            <tr className="bg-green-200 text-green-800">
+                <th className="py-2 px-4 text-left rounded-tl-lg">Waktu</th>
+                <th className="py-2 px-4 text-left rounded-tr-lg">Jam</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr className="border-b">
+                <td className="py-2 px-4">Subuh</td>
+                <td className="py-2 px-4">{staticMasjidInfo.jadwalAdzan?.subuh}</td>
+            </tr>
+            <tr className="border-b">
+                <td className="py-2 px-4">Dzuhur</td>
+                <td className="py-2 px-4">{staticMasjidInfo.jadwalAdzan?.dzuhur}</td>
+            </tr>
+            <tr className="border-b">
+                <td className="py-2 px-4">Ashar</td>
+                <td className="py-2 px-4">{staticMasjidInfo.jadwalAdzan?.ashar}</td>
+            </tr>
+            <tr className="border-b">
+                <td className="py-2 px-4">Maghrib</td>
+                <td className="py-2 px-4">{staticMasjidInfo.jadwalAdzan?.maghrib}</td>
+            </tr>
+            <tr>
+                <td className="py-2 px-4">Isya</td>
+                <td className="py-2 px-4">{staticMasjidInfo.jadwalAdzan?.isya}</td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
 
             {/* Content */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className={`p-6 ${secondaryGray} ${rounded} ${shadow} md:col-span-2`}>
-                    <h2 className={`text-lg font-bold mb-4 ${textPrimary}`}>Grafik Zakat Bulanan</h2>
+  
+            {/* Grafik Zakat Bulanan */}
+            <div className="p-6 bg-gradient-to-br from-green-100 to-white rounded-lg shadow-lg md:col-span-2">
+                <h2 className="text-xl font-bold text-green-700 mb-6 text-center">Grafik Zakat Bulanan</h2>
                     <Bar data={staticMonthlyZakatData} options={chartOptions} />
-                </div>
+            </div>
 
-                <div className={`p-6 ${secondaryGray} ${rounded} ${shadow}`}>
-                    <h2 className={`text-lg font-bold mb-4 ${textPrimary}`}>Pembayaran Zakat Terakhir</h2>
-                    <div className="space-y-4">
-                        {staticRecentPayments.map((payment, idx) => (
-                            <div key={idx} className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-gray-300 rounded-full" />
-                                    <div>
-                                        <p className={`font-semibold ${textPrimary}`}>{payment.name}</p>
-                                        <p className={`text-xs ${textSecondary}`}>{payment.email}</p>
-                                    </div>
-                                </div>
-                                <div className={`text-sm font-semibold ${textPrimary}`}>Rp {payment.amount.toLocaleString('id-ID')}</div>
-                            </div>
+            {/* Pembayaran Zakat Terakhir */}
+                        <div className="p-6 bg-gradient-to-br from-green-100 to-white rounded-lg shadow-lg">
+                            <h2 className="text-xl font-bold text-green-700 mb-6 text-center">Pembayaran Zakat Terakhir</h2>
+                        <div className="space-y-4">
+                            {staticRecentPayments.map((payment, idx) => (
+                        <div key={idx} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-300 rounded-full flex items-center justify-center text-white font-bold">
+                            {payment.name.charAt(0)}
+                        </div>
+                        <div>
+                            <p className="font-semibold text-gray-800">{payment.name}</p>
+                            <p className="text-xs text-gray-500">{payment.email}</p>                            
+                        </div>
+                        </div>
+                            <div className="text-sm font-bold text-green-800">Rp {payment.amount.toLocaleString('id-ID')}</div>
+                        </div>
+                        
                         ))}
                     </div>
                 </div>
