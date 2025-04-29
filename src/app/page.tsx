@@ -134,9 +134,9 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-10">
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 ease-in-out">
             <img 
-              src="/Manajemen Keuangan.png" 
+              src="/man.png" 
               alt="Manajemen Keuangan" 
-              className="w-80 h-50 mx-auto mb-4"
+              className="w-35 h-35 mx-auto mb-4"
             />
               <h3 className="text-xl font-semibold mb-4">Manajemen Keuangan Terpusat</h3>
               <p className="leading-relaxed">
@@ -146,9 +146,9 @@ export default function LandingPage() {
             </div>
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 ease-in-out">
             <img 
-              src="/realtime2.png" 
+              src="/stopwatch.png" 
               alt="realtime2" 
-              className="w-110 h-50 mx-auto mb-4"
+              className="w-35 h-35 mx-auto mb-4"
             />
               <h3 className="text-xl font-semibold mb-4">Laporan Keuangan Real-time</h3>
               <p className="leading-relaxed">
@@ -158,9 +158,9 @@ export default function LandingPage() {
             </div>
             <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 ease-in-out">
             <img 
-              src="/qr.png" 
+              src="/qrcode.png" 
               alt="qr" 
-              className="w-110 h-50 mx-auto mb-4"
+              className="w-35 h-35 mx-auto mb-4"
             />
               <h3 className="text-xl font-semibold mb-4">Donasi Digital dengan QR Code</h3>
               <p className="leading-relaxed">
