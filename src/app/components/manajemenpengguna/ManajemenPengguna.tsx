@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiEdit2, FiTrash2, FiSave, FiX } from 'react-icons/fi'
 import { useAuth } from '../../context/AuthContext'
 
 interface User {
@@ -8,6 +8,14 @@ interface User {
   name: string;
   email: string;
   roles: 'admin' | 'takmir' | 'warga';
+  password?: string;
+}
+
+interface PaginationData {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
 }
 
 const ManajemenPengguna = () => {
@@ -24,47 +32,159 @@ const ManajemenPengguna = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
-  const { user } = useAuth()
+  const [editingUserId, setEditingUserId] = useState<number | null>(null)
+  const [editFormData, setEditFormData] = useState<Omit<User, 'id'> & { password?: string }>({
+    name: '',
+    email: '',
+    roles: 'warga'
+  })
+  const [pagination, setPagination] = useState<PaginationData>({
+    current_page: 1,
+    last_page: 1,
+    per_page: 7,
+    total: 0
+  })
+  const [editPassword, setEditPassword] = useState('')
+  const [showEditPassword, setShowEditPassword] = useState(false)
+  const { user: currentUser } = useAuth()
   
-  const fetchUsers = async () => {
+  const fetchUsers = async (page: number = 1) => {
     setIsLoadingUsers(true)
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`, {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
         },
+        credentials: 'include',
       })
-      if (!response.ok) throw new Error('Failed to fetch users')
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch users')
+      }
+      
       const data = await response.json()
-      setUsers(data)
+      console.log('Full response data:', data)
+      
+      if (Array.isArray(data)) {
+        // Implement client-side pagination
+        const startIndex = (page - 1) * 7
+        const endIndex = startIndex + 7
+        const paginatedData = data.slice(startIndex, endIndex)
+        
+        setUsers(paginatedData)
+        setPagination({
+          current_page: page,
+          last_page: Math.ceil(data.length / 7),
+          per_page: 7,
+          total: data.length
+        })
+      } else {
+        console.log('Invalid data format received:', data)
+        setUsers([])
+        setPagination({
+          current_page: 1,
+          last_page: 1,
+          per_page: 7,
+          total: 0
+        })
+      }
     } catch (error) {
       console.error('Error fetching users:', error)
+      alert('Gagal mengambil data pengguna')
+      setUsers([])
     } finally {
       setIsLoadingUsers(false)
     }
   }
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    if (currentUser?.roles === 'admin') {
+      fetchUsers()
+    }
+  }, [currentUser])
 
   const handleDelete = async (userId: number) => {
     if (!confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) return
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users/${userId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
         },
+        credentials: 'include',
       })
-      if (!response.ok) throw new Error('Failed to delete user')
-      fetchUsers() // Refresh the list
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete user')
+      }
+      
+      fetchUsers(pagination.current_page)
+      alert('Pengguna berhasil dihapus')
     } catch (error) {
       console.error('Error deleting user:', error)
+      alert('Gagal menghapus pengguna')
     }
+  }
+
+  const handleEdit = (user: User) => {
+    setEditingUserId(user.id)
+    setEditFormData({
+      name: user.name,
+      email: user.email,
+      roles: user.roles
+    })
+    setEditPassword('')
+    setShowEditPassword(false)
+  }
+  
+  const handleEditSubmit = async (userId: number) => {
+    setIsLoading(true)
+    try {
+      const token = localStorage.getItem('token')
+      const updateData = {
+        ...editFormData,
+        ...(editPassword && { password: editPassword })
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updateData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to update user')
+      }
+
+      setEditingUserId(null)
+      setEditPassword('')
+      setShowEditPassword(false)
+      fetchUsers(pagination.current_page)
+      alert('Pengguna berhasil diperbarui')
+    } catch (error) {
+      console.error('Error updating user:', error)
+      alert('Gagal memperbarui pengguna')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingUserId(null)
+    setEditPassword('')
+    setShowEditPassword(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,6 +239,19 @@ const ManajemenPengguna = () => {
     return null
   }
 
+  if (currentUser?.roles !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-100 py-12 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white shadow sm:rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Akses Ditolak</h2>
+            <p className="text-gray-600">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 py-12 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -153,7 +286,7 @@ const ManajemenPengguna = () => {
                       maxLength={255}
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className={`block w-full pl-10 pr-3 py-2 border ${errors.name ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+                      className={`block w-full pl-10 pr-3 py-2 border ${errors.name ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-600 font-medium`}
                     />
                   </div>
                   {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name[0]}</p>}
@@ -176,7 +309,7 @@ const ManajemenPengguna = () => {
                       maxLength={255}
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className={`block w-full pl-10 pr-3 py-2 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+                      className={`block w-full pl-10 pr-3 py-2 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-600 font-medium`}
                     />
                   </div>
                   {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email[0]}</p>}
@@ -199,7 +332,7 @@ const ManajemenPengguna = () => {
                       minLength={8}
                       value={formData.password}
                       onChange={(e) => setFormData({...formData, password: e.target.value})}
-                      className={`block w-full pl-10 pr-10 py-2 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+                      className={`block w-full pl-10 pr-10 py-2 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-600 font-medium`}
                     />
                     <button
                       type="button"
@@ -233,7 +366,7 @@ const ManajemenPengguna = () => {
                       minLength={8}
                       value={formData.password_confirmation}
                       onChange={(e) => setFormData({...formData, password_confirmation: e.target.value})}
-                      className={`block w-full pl-10 pr-10 py-2 border ${errors.password_confirmation ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm`}
+                      className={`block w-full pl-10 pr-10 py-2 border ${errors.password_confirmation ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-600 font-medium`}
                     />
                     <button
                       type="button"
@@ -311,48 +444,194 @@ const ManajemenPengguna = () => {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {users.map((user) => (
-                        <tr key={user.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                              ${user.roles === 'admin' ? 'bg-red-100 text-red-800' : 
-                                user.roles === 'takmir' ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-green-100 text-green-800'}`}>
-                              {user.roles}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button
-                              onClick={() => {/* TODO: Implement edit */}}
-                              className="text-indigo-600 hover:text-indigo-900 mr-4"
-                            >
-                              <FiEdit2 className="h-5 w-5" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(user.id)}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              <FiTrash2 className="h-5 w-5" />
-                            </button>
-                          </td>
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Password</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {users && users.length > 0 ? (
+                          users.map((user) => (
+                            <tr key={user.id}>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {editingUserId === user.id ? (
+                                  <input
+                                    type="text"
+                                    value={editFormData.name}
+                                    onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                                    className="block w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                                  />
+                                ) : (
+                                  <div className="text-sm text-gray-900">{user.name}</div>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {editingUserId === user.id ? (
+                                  <input
+                                    type="email"
+                                    value={editFormData.email}
+                                    onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
+                                    className="block w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                                  />
+                                ) : (
+                                  <div className="text-sm text-gray-500">{user.email}</div>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {editingUserId === user.id ? (
+                                  <select
+                                    value={editFormData.roles}
+                                    onChange={(e) => setEditFormData({...editFormData, roles: e.target.value as any})}
+                                    className="block w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                                  >
+                                    <option value="warga">Warga</option>
+                                    <option value="takmir">Takmir</option>
+                                    <option value="admin">Admin</option>
+                                  </select>
+                                ) : (
+                                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    ${user.roles === 'admin' ? 'bg-red-100 text-red-800' : 
+                                      user.roles === 'takmir' ? 'bg-yellow-100 text-yellow-800' : 
+                                      'bg-green-100 text-green-800'}`}>
+                                    {user.roles}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {editingUserId === user.id ? (
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      type="password"
+                                      value={editPassword}
+                                      onChange={(e) => setEditPassword(e.target.value)}
+                                      placeholder="Password baru (kosongkan jika tidak diubah)"
+                                      className="block w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="text-sm text-gray-500">••••••••</div>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                {editingUserId === user.id ? (
+                                  <div className="flex space-x-2">
+                                    <button
+                                      onClick={() => handleEditSubmit(user.id)}
+                                      disabled={isLoading}
+                                      className="text-green-600 hover:text-green-900"
+                                    >
+                                      <FiSave className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                      onClick={handleCancelEdit}
+                                      className="text-red-600 hover:text-red-900"
+                                    >
+                                      <FiX className="h-5 w-5" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => handleEdit(user)}
+                                      className="text-indigo-600 hover:text-indigo-900 mr-4"
+                                    >
+                                      <FiEdit2 className="h-5 w-5" />
+                                    </button>
+                                    {currentUser?.id !== user.id && (
+                                      <button
+                                        onClick={() => handleDelete(user.id)}
+                                        className="text-red-600 hover:text-red-900"
+                                      >
+                                        <FiTrash2 className="h-5 w-5" />
+                                      </button>
+                                    )}
+                                  </>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                              Tidak ada data pengguna
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Pagination */}
+                  {users && users.length > 0 && (
+                    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+                      <div className="flex justify-between flex-1 sm:hidden">
+                        <button
+                          onClick={() => fetchUsers(pagination.current_page - 1)}
+                          disabled={pagination.current_page === 1}
+                          className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          onClick={() => fetchUsers(pagination.current_page + 1)}
+                          disabled={pagination.current_page === pagination.last_page}
+                          className="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Next
+                        </button>
+                      </div>
+                      <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-sm text-gray-700">
+                            Showing <span className="font-medium">{((pagination.current_page - 1) * pagination.per_page) + 1}</span> to{' '}
+                            <span className="font-medium">
+                              {Math.min(pagination.current_page * pagination.per_page, pagination.total)}
+                            </span>{' '}
+                            of <span className="font-medium">{pagination.total}</span> results
+                          </p>
+                        </div>
+                        <div>
+                          <nav className="inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                            <button
+                              onClick={() => fetchUsers(pagination.current_page - 1)}
+                              disabled={pagination.current_page === 1}
+                              className="relative inline-flex items-center px-2 py-2 text-gray-400 rounded-l-md border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Previous
+                            </button>
+                            {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
+                              <button
+                                key={page}
+                                onClick={() => fetchUsers(page)}
+                                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                                  page === pagination.current_page
+                                    ? 'z-10 bg-green-50 border-green-500 text-green-600'
+                                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                            <button
+                              onClick={() => fetchUsers(pagination.current_page + 1)}
+                              disabled={pagination.current_page === pagination.last_page}
+                              className="relative inline-flex items-center px-2 py-2 text-gray-400 rounded-r-md border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Next
+                            </button>
+                          </nav>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
