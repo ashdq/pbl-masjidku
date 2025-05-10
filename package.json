@@ -2,6 +2,7 @@
   "name": "pbl-masjidku",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8000",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -9,15 +10,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@heroicons/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
+    "@mui/material": "^7.0.2",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/forms": "^0.5.10",
+    "axios": "^1.9.0",
     "chart.js": "^4.4.9",
     "express": "^5.1.0",
     "flowbite-react": "^0.11.7",
     "lucide-react": "^0.503.0",
     "next": "15.3.1",
+    "next-auth": "^4.24.11",
     "react": "^19.1.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.1.0",
