@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { useAuth } from '@/app/context/AuthContext';
 
 // Registrasi Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -16,8 +17,11 @@ type Payment = {
 };
 
 type Kegiatan = {
-  title: string;
-  image: string;
+  id?: number;
+  nama_kegiatan: string;
+  tanggal_kegiatan: string;
+  waktu_kegiatan: string;
+  gambar_kegiatan?: string;
 };
 
 type JadwalAdzan = {
@@ -28,11 +32,28 @@ type JadwalAdzan = {
   isya: string;
 };
 
+type Kota = {
+  nama: string;
+  latitude: number;
+  longitude: number;
+};
+
 type MasjidInfo = {
   totalZakatBulanIni: number;
-  kegiatanMasjid: Kegiatan[];
-  jadwalAdzan: JadwalAdzan;
 };
+
+const DAFTAR_KOTA: Kota[] = [
+  { nama: 'Jakarta', latitude: -6.2088, longitude: 106.8456 },
+  { nama: 'Bandung', latitude: -6.9175, longitude: 107.6191 },
+  { nama: 'Surabaya', latitude: -7.2575, longitude: 112.7521 },
+  { nama: 'Medan', latitude: 3.5952, longitude: 98.6722 },
+  { nama: 'Semarang', latitude: -6.9932, longitude: 110.4229 },
+  { nama: 'Yogyakarta', latitude: -7.7956, longitude: 110.3695 },
+  { nama: 'Palembang', latitude: -2.9909, longitude: 104.7565 },
+  { nama: 'Makassar', latitude: -5.1477, longitude: 119.4327 },
+  { nama: 'Denpasar', latitude: -8.6705, longitude: 115.2126 },
+  { nama: 'Malang', latitude: -7.9839, longitude: 112.6214 },
+];
 
 // Komponen kecil untuk PaymentItem
 const PaymentItem = ({ payment }: { payment: Payment }) => (
@@ -73,6 +94,83 @@ const JadwalAdzanTable = ({ jadwal }: { jadwal: JadwalAdzan }) => (
 
 const Overview = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [kegiatan, setKegiatan] = useState<Kegiatan[]>([]);
+  const [isLoadingKegiatan, setIsLoadingKegiatan] = useState(false);
+  const [jadwalAdzan, setJadwalAdzan] = useState<JadwalAdzan>({
+    subuh: '--:--',
+    dzuhur: '--:--',
+    ashar: '--:--',
+    maghrib: '--:--',
+    isya: '--:--'
+  });
+  const [isLoadingJadwal, setIsLoadingJadwal] = useState(false);
+  const [selectedKota, setSelectedKota] = useState<Kota>(DAFTAR_KOTA[0]);
+  const { user } = useAuth();
+
+  // Fetch jadwal adzan
+  useEffect(() => {
+    const fetchJadwalAdzan = async () => {
+      setIsLoadingJadwal(true);
+      try {
+        const response = await fetch(
+          `https://api.aladhan.com/v1/timings/${new Date().getTime() / 1000}?latitude=${selectedKota.latitude}&longitude=${selectedKota.longitude}&method=11`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Gagal memuat jadwal adzan');
+        }
+        
+        const data = await response.json();
+        const timings = data.data.timings;
+        
+        setJadwalAdzan({
+          subuh: timings.Fajr,
+          dzuhur: timings.Dhuhr,
+          ashar: timings.Asr,
+          maghrib: timings.Maghrib,
+          isya: timings.Isha
+        });
+      } catch (error) {
+        console.error('Error fetching jadwal adzan:', error);
+      } finally {
+        setIsLoadingJadwal(false);
+      }
+    };
+
+    fetchJadwalAdzan();
+    // Refresh jadwal setiap 1 jam
+    const interval = setInterval(fetchJadwalAdzan, 3600000);
+    return () => clearInterval(interval);
+  }, [selectedKota]);
+
+  // Fetch kegiatan data
+  useEffect(() => {
+    const fetchKegiatan = async () => {
+      setIsLoadingKegiatan(true);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/kegiatan`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Gagal memuat data kegiatan');
+        }
+        
+        const result = await response.json();
+        setKegiatan(result.data || []);
+      } catch (error) {
+        console.error('Error fetching kegiatan:', error);
+      } finally {
+        setIsLoadingKegiatan(false);
+      }
+    };
+
+    fetchKegiatan();
+  }, []);
 
   // Data statis yang dipindahkan ke useMemo untuk optimasi
   const staticData = useMemo(() => ({
@@ -93,20 +191,6 @@ const Overview = () => {
     ] as Payment[],
     masjidInfo: {
       totalZakatBulanIni: 12500000,
-      kegiatanMasjid: [
-        { title: "Pengajian Rutin", image: "/kegiatan1.jpg" },
-        { title: "Kajian Subuh", image: "/kegiatan2.jpg" },
-        { title: "Bantuan Sosial", image: "/kegiatan3.jpg" },
-        { title: "Tahsin Quran", image: "/kegiatan4.jpg" },
-        { title: "Santunan Yatim", image: "/kegiatan5.jpg" },
-      ] as Kegiatan[],
-      jadwalAdzan: {
-        subuh: "04:30",
-        dzuhur: "12:00",
-        ashar: "15:30",
-        maghrib: "18:00",
-        isya: "19:15",
-      } as JadwalAdzan,
     } as MasjidInfo,
   }), []);
 
@@ -124,13 +208,16 @@ const Overview = () => {
 
   // Event handlers dengan useCallback
   const handleNext = useCallback(() => {
-    setCurrentSlide(prev => (prev + 1) % staticData.masjidInfo.kegiatanMasjid.length);
-  }, [staticData.masjidInfo.kegiatanMasjid.length]);
+    if (kegiatan.length > 0) {
+      setCurrentSlide(prev => (prev + 1) % kegiatan.length);
+    }
+  }, [kegiatan.length]);
 
   const handlePrev = useCallback(() => {
-    setCurrentSlide(prev => (prev - 1 + staticData.masjidInfo.kegiatanMasjid.length) % 
-      staticData.masjidInfo.kegiatanMasjid.length);
-  }, [staticData.masjidInfo.kegiatanMasjid.length]);
+    if (kegiatan.length > 0) {
+      setCurrentSlide(prev => (prev - 1 + kegiatan.length) % kegiatan.length);
+    }
+  }, [kegiatan.length]);
 
   return (
     <div className="space-y-6">
@@ -174,51 +261,99 @@ const Overview = () => {
         <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4">
           <h2 className="text-lg font-semibold text-gray-700 text-center mb-3">Kegiatan</h2>
           <div className="relative rounded-md overflow-hidden">
-            <div className="w-full h-48 md:h-60 bg-gray-200 flex items-center justify-center">
-              <img
-                src={staticData.masjidInfo.kegiatanMasjid[currentSlide].image}
-                alt={staticData.masjidInfo.kegiatanMasjid[currentSlide].title}
-                className="w-full h-full object-cover transition-opacity duration-300"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/placeholder-image.jpg';
-                }}
-              />
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2">
-              <p className="text-sm font-medium">{staticData.masjidInfo.kegiatanMasjid[currentSlide].title}</p>
-            </div>
-            <button
-              onClick={handlePrev}
-              className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/80 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-white transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/80 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-white transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            {isLoadingKegiatan ? (
+              <div className="w-full h-48 md:h-60 bg-gray-100 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+              </div>
+            ) : kegiatan.length > 0 ? (
+              <>
+                <div className="w-full h-48 md:h-60 bg-gray-200 flex items-center justify-center">
+                  <img
+                    src={kegiatan[currentSlide].gambar_kegiatan 
+                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${kegiatan[currentSlide].gambar_kegiatan}`
+                      : '/placeholder-image.jpg'}
+                    alt={kegiatan[currentSlide].nama_kegiatan}
+                    className="w-full h-full object-cover transition-opacity duration-300"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder-image.jpg';
+                    }}
+                  />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2">
+                  <p className="text-sm font-medium">{kegiatan[currentSlide].nama_kegiatan}</p>
+                  <p className="text-xs text-gray-200">
+                    {new Date(kegiatan[currentSlide].tanggal_kegiatan).toLocaleDateString('id-ID')} - {kegiatan[currentSlide].waktu_kegiatan}
+                  </p>
+                </div>
+                <button
+                  onClick={handlePrev}
+                  className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/80 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-white transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/80 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-white transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <div className="w-full h-48 md:h-60 bg-gray-100 flex items-center justify-center">
+                <p className="text-gray-500">Tidak ada kegiatan</p>
+              </div>
+            )}
           </div>
-          <div className="flex justify-center mt-2 space-x-1">
-            {staticData.masjidInfo.kegiatanMasjid.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  currentSlide === index ? 'bg-green-500' : 'bg-gray-300'
-                } transition-colors duration-300`}
-                onClick={() => setCurrentSlide(index)}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+          {kegiatan.length > 0 && (
+            <div className="flex justify-center mt-2 space-x-1">
+              {kegiatan.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full ${
+                    currentSlide === index ? 'bg-green-500' : 'bg-gray-300'
+                  } transition-colors duration-300`}
+                  onClick={() => setCurrentSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Jadwal Adzan */}
         <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4">
           <h2 className="text-lg font-semibold text-gray-700 text-center mb-3">Jadwal Adzan</h2>
+          <div className="mb-4">
+            <label htmlFor="kota" className="block text-sm font-medium text-gray-700 mb-1">
+              Pilih Kota
+            </label>
+            <select
+              id="kota"
+              value={selectedKota.nama}
+              onChange={(e) => {
+                const kota = DAFTAR_KOTA.find(k => k.nama === e.target.value);
+                if (kota) setSelectedKota(kota);
+              }}
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm text-gray-900 bg-white"
+            >
+              {DAFTAR_KOTA.map((kota) => (
+                <option key={kota.nama} value={kota.nama} className="text-gray-900">
+                  {kota.nama}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="overflow-x-auto">
-            <JadwalAdzanTable jadwal={staticData.masjidInfo.jadwalAdzan} />
+            {isLoadingJadwal ? (
+              <div className="flex justify-center items-center h-32">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+              </div>
+            ) : (
+              <JadwalAdzanTable jadwal={jadwalAdzan} />
+            )}
+            <p className="text-xs text-gray-500 text-center mt-2">
+              Jadwal adzan untuk {selectedKota.nama}
+            </p>
           </div>
         </div>
       </div>

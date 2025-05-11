@@ -9,7 +9,8 @@ interface User {
   id: number
   name: string
   email: string
-  roles: UserRole
+  role: string
+  roles?: string[]
   access_token?: string
 }
 
