@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Logout from '../../components/Logout';
 import ManajemenPengguna from '../../components/manajemenpengguna/ManajemenPengguna';
 import Overview from '../../components/overview/Overview';
+import PengelolaanKegiatan from '../../components/kegiatan/Kegiatan';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -17,7 +18,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
-    } else if (user && user.roles !== 'admin') {
+    } else if (user && !user.roles?.includes('admin')) {
       router.push('/unauthorized');
     }
   }, [user, loading, router]);
@@ -49,6 +50,8 @@ export default function AdminDashboard() {
         return <ManajemenPengguna />;
       case "Overview":
         return <Overview />;
+      case "Pengelolaan Kegiatan":
+        return <PengelolaanKegiatan />;
       default:
         return null;
     }

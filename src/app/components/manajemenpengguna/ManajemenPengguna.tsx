@@ -101,7 +101,7 @@ const ManajemenPengguna = () => {
   }
 
   useEffect(() => {
-    if (currentUser?.roles === 'admin') {
+    if (currentUser?.roles?.includes('admin')) {
       fetchUsers()
     }
   }, [currentUser])
@@ -239,7 +239,7 @@ const ManajemenPengguna = () => {
     return null
   }
 
-  if (currentUser?.roles !== 'admin') {
+  if (!currentUser?.roles?.includes('admin')) {
     return (
       <div className="min-h-screen bg-gray-100 py-12 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">

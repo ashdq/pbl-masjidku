@@ -66,8 +66,8 @@ export default function RegisterPage() {
   }
 
   if (user) {
-    router.push(user.roles === 'admin' ? '/admin/dashboard' : 
-              user.roles === 'takmir' ? '/takmir/dashboard' : '/warga/dashboard')
+    router.push(user.roles?.includes('admin') ? '/admin/dashboard' : 
+              user.roles?.includes('takmir') ? '/takmir/dashboard' : '/warga/dashboard')
     return null
   }
 

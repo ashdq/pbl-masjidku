@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Logout from '../../components/Logout';
 import Overview from '../../components/overview/Overview';
+import PengelolaanKegiatan from '../../components/kegiatan/Kegiatan';
 
 export default function TakmirDashboard() {
   const { user, loading } = useAuth();
@@ -47,6 +48,8 @@ export default function TakmirDashboard() {
         return <Overview />;
       case "Donasi":
         return null; // TODO: Implement Donasi component
+      case "Pengelolaan Kegiatan":
+        return <PengelolaanKegiatan />;
       default:
         return null;
     }
@@ -72,7 +75,7 @@ export default function TakmirDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Donasi"].map((tab) => (
+        {["Overview", "Donasi", "Pengelolaan Kegiatan"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
