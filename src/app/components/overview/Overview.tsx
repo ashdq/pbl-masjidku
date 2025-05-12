@@ -64,7 +64,6 @@ const PaymentItem = ({ payment }: { payment: Payment }) => (
       </div>
       <div>
         <p className="font-semibold text-gray-800">{payment.name}</p>
-        <p className="text-xs text-gray-500">{payment.email}</p>
       </div>
     </div>
     <div className="text-sm font-bold text-green-800">
@@ -96,6 +95,12 @@ const Overview = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [kegiatan, setKegiatan] = useState<Kegiatan[]>([]);
   const [isLoadingKegiatan, setIsLoadingKegiatan] = useState(false);
+  const [totalDonasiBulanIni, setTotalDonasiBulanIni] = useState(0);
+  const [isLoadingDonasi, setIsLoadingDonasi] = useState(false);
+  const [recentDonations, setRecentDonations] = useState<Payment[]>([]);
+  const [isLoadingRecentDonations, setIsLoadingRecentDonations] = useState(false);
+  const [monthlyDonationData, setMonthlyDonationData] = useState<number[]>([]);
+  const [isLoadingChart, setIsLoadingChart] = useState(false);
   const [jadwalAdzan, setJadwalAdzan] = useState<JadwalAdzan>({
     subuh: '--:--',
     dzuhur: '--:--',
@@ -106,6 +111,46 @@ const Overview = () => {
   const [isLoadingJadwal, setIsLoadingJadwal] = useState(false);
   const [selectedKota, setSelectedKota] = useState<Kota>(DAFTAR_KOTA[0]);
   const { user } = useAuth();
+
+  // Fungsi untuk menyamarkan nama
+  const maskName = (name: string) => {
+    const words = name.split(' ');
+    return words.map(word => {
+      if (word.length <= 2) return word;
+      return word.charAt(0) + '*'.repeat(word.length - 2) + word.charAt(word.length - 1);
+    }).join(' ');
+  };
+
+  // Fetch total donasi bulan ini
+  useEffect(() => {
+    const fetchTotalDonasi = async () => {
+        setIsLoadingDonasi(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/donasi/statistics`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Gagal memuat data donasi');
+            }
+
+            const result = await response.json();
+            if (result.status === 'success' && result.data) {
+                setTotalDonasiBulanIni(result.data.total_donasi || 0);
+            }
+        } catch (error) {
+            console.error('Error fetching total donasi:', error);
+        } finally {
+            setIsLoadingDonasi(false);
+        }
+    };
+
+    fetchTotalDonasi();
+  }, []);
 
   // Fetch jadwal adzan
   useEffect(() => {
@@ -172,27 +217,102 @@ const Overview = () => {
     fetchKegiatan();
   }, []);
 
-  // Data statis yang dipindahkan ke useMemo untuk optimasi
-  const staticData = useMemo(() => ({
-    monthlyZakatData: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
-      datasets: [{
-        label: 'Total Donasi Bulanan',
-        data: [1500000, 1800000, 1650000, 2000000, 1750000, 1900000, 1600000, 2100000, 1850000, 1950000, 1700000, 2200000],
-        backgroundColor: 'rgba(75, 192, 192, 0.8)',
-      }],
-    },
-    recentPayments: [
-      { name: "Kinata Dewa Ariandi", email: "ali@email.com", amount: 50000 },
-      { name: "Raden", email: "@email.com", amount: 75000 },
-      { name: "Diki", email: "a@email.com", amount: 30000 },
-      { name: "Hanip", email: "a@email.com", amount: 100000 },
-      { name: "Jantra", email: "a@email.com", amount: 60000 },
-    ] as Payment[],
-    masjidInfo: {
-      totalZakatBulanIni: 12500000,
-    } as MasjidInfo,
-  }), []);
+  // Fetch recent donations
+  useEffect(() => {
+    const fetchRecentDonations = async () => {
+      setIsLoadingRecentDonations(true);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/donasi`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Gagal memuat data donasi');
+        }
+
+        const result = await response.json();
+        if (result.status === 'success' && result.data) {
+          // Ambil 5 donasi terakhir dan urutkan berdasarkan tanggal terbaru
+          const recent = result.data
+            .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            .slice(0, 5)
+            .map((donasi: any) => ({
+              name: maskName(donasi.donatur.name),
+              amount: typeof donasi.jumlah_donasi === 'string' 
+                ? parseFloat(donasi.jumlah_donasi) 
+                : donasi.jumlah_donasi
+            }));
+
+          setRecentDonations(recent);
+        }
+      } catch (error) {
+        console.error('Error fetching recent donations:', error);
+      } finally {
+        setIsLoadingRecentDonations(false);
+      }
+    };
+
+    fetchRecentDonations();
+  }, []);
+
+  // Fetch monthly donation data
+  useEffect(() => {
+    const fetchMonthlyDonations = async () => {
+      setIsLoadingChart(true);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/donasi`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Gagal memuat data donasi');
+        }
+
+        const result = await response.json();
+        if (result.status === 'success' && result.data) {
+          const currentYear = new Date().getFullYear();
+          const monthlyTotals = new Array(12).fill(0);
+
+          result.data.forEach((donasi: any) => {
+            const donasiDate = new Date(donasi.date);
+            if (donasiDate.getFullYear() === currentYear) {
+              const month = donasiDate.getMonth();
+              const jumlah = typeof donasi.jumlah_donasi === 'string' 
+                ? parseFloat(donasi.jumlah_donasi) 
+                : donasi.jumlah_donasi;
+              monthlyTotals[month] += isNaN(jumlah) ? 0 : jumlah;
+            }
+          });
+
+          setMonthlyDonationData(monthlyTotals);
+        }
+      } catch (error) {
+        console.error('Error fetching monthly donations:', error);
+      } finally {
+        setIsLoadingChart(false);
+      }
+    };
+
+    fetchMonthlyDonations();
+  }, []);
+
+  // Data untuk grafik
+  const chartData = useMemo(() => ({
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
+    datasets: [{
+      label: 'Total Donasi Bulanan',
+      data: monthlyDonationData,
+      backgroundColor: 'rgba(75, 192, 192, 0.8)',
+    }],
+  }), [monthlyDonationData]);
 
   // Opsi Chart
   const chartOptions = useMemo(() => ({
@@ -223,38 +343,60 @@ const Overview = () => {
     <div className="space-y-6">
       {/* Content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        {/* Grafik Zakat */}
+        {/* Grafik Donasi */}
         <div className="p-4 md:p-6 bg-gradient-to-br from-green-50 to-white rounded-lg shadow-lg md:col-span-2">
           <h2 className="text-xl font-bold text-green-700 mb-4 text-center">Grafik Donasi Bulanan</h2>
-          <div className="h-64 md:h-80">
-            <Bar 
-              data={staticData.monthlyZakatData} 
-              options={chartOptions} 
-              height="100%"
-            />
-          </div>
+          {isLoadingChart ? (
+            <div className="flex items-center justify-center h-64 md:h-80">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+            </div>
+          ) : (
+            <div className="h-64 md:h-80">
+              <Bar 
+                data={chartData} 
+                options={chartOptions} 
+                height="100%"
+              />
+            </div>
+          )}
         </div>
 
         {/* Pembayaran Terakhir */}
         <div className="p-4 md:p-6 bg-gradient-to-br from-green-50 to-white rounded-lg shadow-lg">
           <h2 className="text-xl font-bold text-green-700 mb-4 text-center">Riwayat Donasi Terakhir</h2>
-          <div className="space-y-3">
-            {staticData.recentPayments.map((payment, idx) => (
-              <PaymentItem key={idx} payment={payment} />
-            ))}
-          </div>
+          {isLoadingRecentDonations ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentDonations.map((payment, idx) => (
+                <PaymentItem key={idx} payment={payment} />
+              ))}
+              {recentDonations.length === 0 && (
+                <p className="text-center text-gray-500">Belum ada data donasi</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Menu Bawah */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Total Zakat */}
+        {/* Total Donasi */}
         <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4 flex flex-col items-center justify-center">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Total Donasi</h2>
-          <p className="text-2xl font-bold text-green-600">
-            Rp {staticData.masjidInfo.totalZakatBulanIni.toLocaleString('id-ID')}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">Bulan Ini</p>
+          {isLoadingDonasi ? (
+            <div className="flex items-center justify-center h-8">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
+            </div>
+          ) : (
+            <>
+              <p className="text-2xl font-bold text-green-600">
+                Rp {totalDonasiBulanIni.toLocaleString('id-ID')}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Carousel Kegiatan */}

@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Logout from '../../components/Logout';
 import Overview from '../../components/overview/Overview';
+import Donasi from '../../components/donasi/Donasi';
 
 export default function WargaDashboard() {
   const { user, loading } = useAuth();
@@ -46,7 +47,7 @@ export default function WargaDashboard() {
       case "Overview":
         return <Overview />;
       case "Donasi":
-        return null; // TODO: Implement Donasi component
+        return <Donasi />;
       default:
         return null;
     }

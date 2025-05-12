@@ -8,6 +8,7 @@ import Logout from '../../components/Logout';
 import ManajemenPengguna from '../../components/manajemenpengguna/ManajemenPengguna';
 import Overview from '../../components/overview/Overview';
 import PengelolaanKegiatan from '../../components/kegiatan/Kegiatan';
+import LaporanDonasi from '../../components/donasi/LaporanDonasi';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -52,6 +53,8 @@ export default function AdminDashboard() {
         return <Overview />;
       case "Pengelolaan Kegiatan":
         return <PengelolaanKegiatan />;
+      case "Laporan Donasi":
+        return <LaporanDonasi />;
       default:
         return null;
     }
