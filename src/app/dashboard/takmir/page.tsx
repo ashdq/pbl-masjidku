@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Logout from '../../components/Logout';
 import Overview from '../../components/overview/Overview';
 import PengelolaanKegiatan from '../../components/kegiatan/Kegiatan';
+import LaporanDonasi from '../../components/donasi/LaporanDonasi';
 
 export default function TakmirDashboard() {
   const { user, loading } = useAuth();
@@ -46,8 +47,8 @@ export default function TakmirDashboard() {
     switch (activeTab) {
       case "Overview":
         return <Overview />;
-      case "Donasi":
-        return null; // TODO: Implement Donasi component
+      case "Laporan Donasi":
+        return <LaporanDonasi />;
       case "Pengelolaan Kegiatan":
         return <PengelolaanKegiatan />;
       default:
@@ -75,7 +76,7 @@ export default function TakmirDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Donasi", "Pengelolaan Kegiatan"].map((tab) => (
+        {["Overview", "Laporan Donasi", "Pengelolaan Kegiatan"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
