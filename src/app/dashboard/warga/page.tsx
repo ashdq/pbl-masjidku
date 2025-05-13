@@ -63,10 +63,6 @@ export default function WargaDashboard() {
             <CalendarDays className="w-4 h-4" />
             <span>{new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md shadow-md transition hover:bg-green-700 w-full sm:w-auto justify-center">
-            <Download className="w-4 h-4" />
-            <span>Unduh Laporan</span>
-          </button>
           <Logout />
         </div>
       </div>
