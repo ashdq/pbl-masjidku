@@ -8,6 +8,7 @@ import Logout from '../../components/Logout';
 import Overview from '../../components/overview/Overview';
 import PengelolaanKegiatan from '../../components/kegiatan/Kegiatan';
 import LaporanDonasi from '../../components/donasi/LaporanDonasi';
+import Pengeluaran from '../../components/pengeluaran/Pengeluaran';
 
 export default function TakmirDashboard() {
   const { user, loading } = useAuth();
@@ -51,6 +52,8 @@ export default function TakmirDashboard() {
         return <LaporanDonasi />;
       case "Pengelolaan Kegiatan":
         return <PengelolaanKegiatan />;
+      case "Laporan Keuangan":
+        return <Pengeluaran />;
       default:
         return null;
     }
@@ -66,17 +69,13 @@ export default function TakmirDashboard() {
             <CalendarDays className="w-4 h-4" />
             <span>{new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md shadow-md transition hover:bg-green-700 w-full sm:w-auto justify-center">
-            <Download className="w-4 h-4" />
-            <span>Unduh Laporan</span>
-          </button>
           <Logout />
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Laporan Donasi", "Pengelolaan Kegiatan"].map((tab) => (
+        {["Overview", "Laporan Keuangan", "Laporan Donasi", "Pengelolaan Kegiatan"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${

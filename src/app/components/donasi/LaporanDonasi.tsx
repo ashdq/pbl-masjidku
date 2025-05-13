@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { FiDownload, FiSearch, FiFilter } from 'react-icons/fi';
+import { useRef } from 'react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 interface Donasi {
   id: number;
@@ -35,6 +39,7 @@ const LaporanDonasi = () => {
     startDate: '',
     endDate: ''
   });
+
 
   useEffect(() => {
     fetchAllDonations();
@@ -108,9 +113,38 @@ const LaporanDonasi = () => {
   });
 
   const handleExport = () => {
-    // Implementasi export ke Excel/CSV akan ditambahkan di sini
-    alert('Fitur export akan segera hadir!');
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text('Laporan Donasi', 14, 15);
+
+    autoTable(doc, {
+      startY: 25,
+      head: [['Tanggal', 'Nama Donatur', 'Email', 'Jumlah', 'Catatan']],
+      body: filteredDonations.map((donasi) => [
+        new Date(donasi.date).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+        donasi.donatur.name,
+        donasi.donatur.email,
+        formatRupiah(donasi.jumlah_donasi),
+        donasi.note || '-',
+      ]),
+      styles: {
+        fontSize: 10,
+      },
+      headStyles: {
+        fillColor: [22, 163, 74], // hijau tailwind
+      },
+    });
+
+    doc.save('laporan-donasi.pdf');
   };
+
+
+
 
   if (isLoading) {
     return (
@@ -124,7 +158,7 @@ const LaporanDonasi = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div id="laporan-pdf" className="space-y-6">
       {/* Header dan Statistik */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -134,7 +168,7 @@ const LaporanDonasi = () => {
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
           >
             <FiDownload className="w-5 h-5" />
-            <span>Export Data</span>
+            <span>Unduh Laporan</span>
           </button>
         </div>
 
