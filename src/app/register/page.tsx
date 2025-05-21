@@ -68,54 +68,49 @@ export default function RegisterPage() {
   }
 
   if (user) {
-    router.push(user.roles?.includes('admin') ? '/admin/dashboard' : 
-              user.roles?.includes('takmir') ? '/takmir/dashboard' : '/warga/dashboard')
+    router.push(user.roles?.includes('admin') ? '/admin/dashboard' :
+      user.roles?.includes('takmir') ? '/takmir/dashboard' : '/warga/dashboard')
     return null
   }
 
   return (
-    <div className="min-h-screen relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/masjid-register.jpg')" }}>
-      <div className="absolute inset-0 bg-black/60"></div>
+<div
+  className="min-h-screen relative flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
+  style={{ backgroundImage: "url('/bg1.jpg')" }}
+>
+      <div className="absolute inset-0 z-0 opacity-10">
+        {/* Subtle background pattern or illustration */}
+        <div className="w-full h-full bg-topography-pattern" style={{ backgroundImage: "url('/images/pattern-green.svg')", backgroundSize: 'cover', opacity: 0.1 }}></div>
+      </div>
 
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="max-w-xl mx-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden animate__animated animate__fadeIn">
+      <div className="container mx-auto max-w-lg relative z-10">
+        <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-xl overflow-hidden animate__animated animate__zoomIn">
 
           {/* Header */}
-          <div className="relative h-28 bg-gradient-to-r from-green-700 to-emerald-600 shadow-md animate__animated animate__fadeInDown">
-            <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">Daftar Akun Baru</h2>
-                <p className="text-green-100 text-sm">Bergabung bersama kami</p>
-              </div>
-            </div>
+          <div className="relative p-6 bg-gradient-to-br from-green-600 to-emerald-500 text-white text-center animate__animated animate__fadeInDown">
+            <h2 className="text-3xl font-extrabold mb-1 drop-shadow-md">Daftar Akun Baru</h2>
+            <p className="text-green-100 text-sm">Bergabung bersama kami untuk memulai</p>
           </div>
 
           {/* Form Container */}
-          <div className="p-8 animate__animated animate__fadeInUp animate__delay-1s">
+          <div className="p-8 space-y-6 animate__animated animate__fadeInUp animate__delay-0-5s">
             {error && (
-              <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center space-x-3 animate__animated animate__shakeX">
+                <svg className="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm font-medium">{error}</p>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label htmlFor="nama" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
                   Nama Lengkap
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
@@ -124,8 +119,8 @@ export default function RegisterPage() {
                     name="name"
                     type="text"
                     required
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-900 font-medium transition-all duration-300"
-                    placeholder="Masukkan nama lengkap"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-800 transition-all duration-200"
+                    placeholder="Masukkan nama lengkap Anda"
                     value={formData.name}
                     onChange={handleChange}
                   />
@@ -133,12 +128,12 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
                   Alamat Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
@@ -148,8 +143,8 @@ export default function RegisterPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-900 font-medium transition-all duration-300"
-                    placeholder="Masukkan alamat email"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-800 transition-all duration-200"
+                    placeholder="Masukkan alamat email Anda"
                     value={formData.email}
                     onChange={handleChange}
                   />
@@ -157,12 +152,12 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1">
                   Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </div>
@@ -173,8 +168,8 @@ export default function RegisterPage() {
                     autoComplete="new-password"
                     required
                     minLength={8}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-900 font-medium transition-all duration-300"
-                    placeholder="Masukkan password (minimal 8 karakter)"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-800 transition-all duration-200"
+                    placeholder="Minimal 8 karakter"
                     value={formData.password}
                     onChange={handleChange}
                   />
@@ -182,12 +177,12 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="password_confirmation" className="block text-sm font-semibold text-gray-700 mb-1">
                   Konfirmasi Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </div>
@@ -198,8 +193,8 @@ export default function RegisterPage() {
                     autoComplete="new-password"
                     required
                     minLength={8}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-900 font-medium transition-all duration-300"
-                    placeholder="Konfirmasi password"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-800 transition-all duration-200"
+                    placeholder="Konfirmasi password Anda"
                     value={formData.password_confirmation}
                     onChange={handleChange}
                   />
@@ -210,7 +205,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-300 animate__animated animate__bounceIn"
+                  className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out transform hover:-translate-y-0-5 disabled:opacity-60 disabled:cursor-not-allowed animate__animated animate__pulse"
                 >
                   {loading ? (
                     <>
@@ -225,22 +220,22 @@ export default function RegisterPage() {
               </div>
             </form>
 
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">
+            <div className="mt-6 text-center text-sm">
+              <p className="text-gray-600">
                 Sudah punya akun?{' '}
-                <Link href="/login" className="text-green-700 hover:underline">
+                <Link href="/login" className="font-medium text-green-600 hover:text-green-800 transition-colors duration-200">
                   Masuk di sini
                 </Link>
               </p>
             </div>
-            <div className="mt-6 flex items-center justify-center">
-            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-              </svg>
-              Kembali
-            </Link>
-          </div>
+            <div className="mt-4 flex items-center justify-center">
+              <Link href="/" className="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors duration-200 group">
+                <svg className="w-4 h-4 mr-1.5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Kembali ke Beranda
+              </Link>
+            </div>
           </div>
         </div>
       </div>
