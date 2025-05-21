@@ -26,7 +26,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
@@ -87,7 +87,7 @@ function Navbar() {
   const handleClose = () => setOpen(false);
 
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
@@ -150,13 +150,13 @@ function Navbar() {
 }
 
 // Enhanced FeatureCard with animation
-function FeatureCard({ title, description, iconSrc }: { 
-  title: string; 
-  description: string; 
-  iconSrc: string 
+function FeatureCard({ title, description, iconSrc }: {
+  title: string;
+  description: string;
+  iconSrc: string
 }) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -179,6 +179,58 @@ function FeatureCard({ title, description, iconSrc }: {
   );
 }
 
+// FAQ Item component
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4 }}
+      className="border-b border-gray-200 py-4"
+    >
+      <button
+        className="flex justify-between items-center w-full text-left font-semibold text-lg py-2 focus:outline-none"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{question}</span>
+        <motion.svg
+          className="w-5 h-5 text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </motion.svg>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <p className="pt-2 pb-4 text-gray-600">{answer}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+
 export default function LandingPage() {
   const router = useRouter();
   const heroRef = useRef<HTMLDivElement>(null);
@@ -193,7 +245,7 @@ export default function LandingPage() {
         className="text-white min-h-screen flex flex-col items-center justify-center text-center px-6 pt-32 pb-16 relative overflow-hidden"
         id="hero"
       >
-        <div 
+        <div
           className="absolute inset-0 bg-black/40 z-0"
           style={{
             backgroundImage: 'url("/bg2.jpg")',
@@ -203,7 +255,7 @@ export default function LandingPage() {
             backgroundAttachment: "fixed",
           }}
         />
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -212,7 +264,7 @@ export default function LandingPage() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
             Sistem Informasi dan Keuangan Masjid
           </h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -221,7 +273,7 @@ export default function LandingPage() {
             Kelola transaksi dan laporan keuangan masjid Anda dengan lebih
             efisien, transparan, dan mudah diakses.
           </motion.p>
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push('/register')}
@@ -238,7 +290,7 @@ export default function LandingPage() {
       {/* Enhanced Features Section with staggered animations */}
       <section className="py-20 px-6 bg-gray-50" id="features">
         <div className="container max-w-6xl mx-auto text-center">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -269,14 +321,14 @@ export default function LandingPage() {
 
       {/* Enhanced CTA Section with pulse animation */}
       <section className="bg-gradient-to-br from-green-600 to-green-800 text-white py-24 px-6 text-center relative overflow-hidden" id="cta">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
           className="container max-w-xl mx-auto relative z-10"
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl font-bold mb-6"
             initial={{ y: 30 }}
             whileInView={{ y: 0 }}
@@ -285,7 +337,7 @@ export default function LandingPage() {
           >
             Siap Memodernisasi Keuangan Masjid Anda?
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="mb-8 text-lg leading-relaxed"
             initial={{ y: 30 }}
             whileInView={{ y: 0 }}
@@ -295,7 +347,7 @@ export default function LandingPage() {
             Bergabunglah dengan ratusan masjid yang telah merasakan kemudahan
             dan transparansi dengan Masjidku.
           </motion.p>
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push('/register')}
@@ -308,9 +360,9 @@ export default function LandingPage() {
             Daftar Sekarang
           </motion.button>
         </motion.div>
-        
+
         {/* Animated decorative elements */}
-        <motion.div 
+        <motion.div
           className="absolute top-0 left-0 w-full h-full opacity-10 z-0"
           animate={{
             background: [
@@ -327,18 +379,56 @@ export default function LandingPage() {
         />
       </section>
 
+
+      {/* FAQ Section */}
+      <section className="py-20 px-6 bg-white" id="faq">
+        <div className="container max-w-4xl mx-auto text-center">
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl font-bold mb-12"
+          >
+            Pertanyaan yang Sering Diajukan
+          </motion.h2>
+          <div className="space-y-4">
+            <FAQItem
+              question="Apa itu Masjidku?"
+              answer="Masjidku adalah sistem informasi dan keuangan masjid berbasis web yang membantu masjid mengelola transaksi, laporan keuangan, dan donasi digital dengan lebih efisien dan transparan."
+            />
+            <FAQItem
+              question="Bagaimana cara mendaftar untuk masjid saya?"
+              answer="Anda dapat mendaftar dengan mengklik tombol 'Daftar Sekarang' di halaman utama kami. Ikuti langkah-langkah pendaftaran yang mudah dan siapkan informasi dasar tentang masjid Anda."
+            />
+            <FAQItem
+              question="Apakah Masjidku gratis untuk digunakan?"
+              answer="Masjidku menawarkan beberapa paket layanan, termasuk opsi gratis dengan fitur dasar serta paket berbayar dengan fitur yang lebih lengkap untuk kebutuhan masjid yang lebih besar. Detail lebih lanjut dapat ditemukan di halaman harga kami."
+            />
+            <FAQItem
+              question="Apakah data keuangan masjid saya aman?"
+              answer="Ya, keamanan data adalah prioritas utama kami. Masjidku menggunakan enkripsi standar industri dan protokol keamanan terbaru untuk melindungi semua data keuangan masjid Anda."
+            />
+            <FAQItem
+              question="Bisakah saya mengintegrasikan sistem donasi digital yang sudah ada?"
+              answer="Masjidku menyediakan fitur donasi digital terintegrasi yang mendukung berbagai metode pembayaran. Untuk integrasi dengan sistem donasi digital yang sudah ada, silakan hubungi tim dukungan kami."
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Enhanced Footer with subtle animation */}
-      <motion.footer 
+      <motion.footer
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="bg-gray-800 text-gray-300 py-12 text-center" 
+        className="bg-gray-800 text-gray-300 py-12 text-center"
         id="contact"
       >
         <div className="container max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
               className="mb-4 md:mb-0"
             >
@@ -348,30 +438,30 @@ export default function LandingPage() {
               </Link>
             </motion.div>
             <div className="flex flex-col md:flex-row gap-6">
-              <motion.a 
+              <motion.a
                 whileHover={{ y: -3 }}
-                href="#" 
+                href="#"
                 className="hover:text-white transition"
               >
                 Privacy Policy
               </motion.a>
-              <motion.a 
+              <motion.a
                 whileHover={{ y: -3 }}
-                href="#" 
+                href="#"
                 className="hover:text-white transition"
               >
                 Terms of Service
               </motion.a>
-              <motion.a 
+              <motion.a
                 whileHover={{ y: -3 }}
-                href="mailto:contact@masjidku.com" 
+                href="mailto:contact@masjidku.com"
                 className="hover:text-white transition"
               >
                 Contact Us
               </motion.a>
             </div>
           </div>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
