@@ -7,6 +7,10 @@ import { useRouter } from 'next/navigation';
 import Logout from '../../components/Logout';
 import Overview from '../../components/overview/Overview';
 import Donasi from '../../components/donasi/Donasi';
+import Galeri from '../../components/Galeri/Galeri';
+import Aspirasi from '../../components/Aspirasi/Aspirasi';
+import Artikel from '../../components/Artikel/Artikel';
+
 
 export default function WargaDashboard() {
   const { user, loading } = useAuth();
@@ -48,6 +52,12 @@ export default function WargaDashboard() {
         return <Overview />;
       case "Donasi":
         return <Donasi />;
+      case "Galeri":
+          return <Galeri />;
+      case "Aspirasi":
+          return <Aspirasi />;
+      case "Artikel":
+          return <Artikel />;
       default:
         return null;
     }
@@ -69,7 +79,7 @@ export default function WargaDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Donasi"].map((tab) => (
+        {["Overview", "Donasi", "Galeri", "Aspirasi", "Artikel"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
