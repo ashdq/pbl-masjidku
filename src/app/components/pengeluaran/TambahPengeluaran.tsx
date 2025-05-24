@@ -127,8 +127,8 @@ const TambahPengeluaran = () => {
           transition={{ duration: 0.4 }}
           className="bg-white p-8 rounded-xl shadow-lg"
         >
-          <div className="flex items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800 ">Tambah Pengeluaran Baru</h1>
+          <div className="flex items-center justify-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Tambah Pengeluaran Baru</h1>
           </div>
 
           {error && (
