@@ -30,7 +30,6 @@ export default function LoginPage() {
     setErrors({});
 
     try {
-      await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
       const csrfResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/sanctum/csrf-cookie`, {
         credentials: 'include',
       });
