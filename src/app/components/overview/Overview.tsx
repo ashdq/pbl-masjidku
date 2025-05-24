@@ -424,7 +424,32 @@ const Overview = () => {
                 <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2">
                   <p className="text-sm font-medium">{kegiatan[currentSlide].nama_kegiatan}</p>
                   <p className="text-xs text-gray-200">
-                    {new Date(kegiatan[currentSlide].tanggal_kegiatan).toLocaleDateString('id-ID')} - {kegiatan[currentSlide].waktu_kegiatan}
+                    {
+                      (() => {
+                        const tanggalRaw = kegiatan[currentSlide].tanggal_kegiatan;
+                        const waktuRaw = kegiatan[currentSlide].waktu_kegiatan;
+
+                        // Ambil tanggal saja (YYYY-MM-DD)
+                        const tanggal = tanggalRaw && tanggalRaw.includes('T')
+                          ? tanggalRaw.split('T')[0]
+                          : tanggalRaw;
+
+                        // Ambil jam:menit:detik saja dari waktu (HH:mm:ss)
+                        let waktu = waktuRaw;
+                        if (waktuRaw && waktuRaw.includes('T')) {
+                          const afterT = waktuRaw.split('T')[1];
+                          waktu = afterT ? afterT.split('.')[0] : '';
+                        } else if (waktuRaw && waktuRaw.length > 8) {
+                          // Jika waktuRaw seperti '19:30:00.000000Z'
+                          waktu = waktuRaw.split('.')[0];
+                        }
+
+                        // Jika waktu adalah '00:00:00', jangan tampilkan
+                        return waktu && waktu !== '00:00:00'
+                          ? `${tanggal} ${waktu}`
+                          : tanggal;
+                      })()
+                    }
                   </p>
                 </div>
                 <button
