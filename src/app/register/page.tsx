@@ -76,7 +76,6 @@ export default function RegisterPage() {
   return (
 <div
   className="min-h-screen relative flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
-  style={{ backgroundImage: "url('/bg1.jpg')" }}
 >
       <div className="absolute inset-0 z-0 opacity-10">
         {/* Subtle background pattern or illustration */}
