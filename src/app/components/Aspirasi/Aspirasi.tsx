@@ -125,18 +125,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   button: {
-    marginTop: 10,
-    padding: '14px 0',
-    backgroundColor: '#28a745', // hijau
-    color: '#000', 
-    fontWeight: '700',
-    fontSize: 18,
-    border: 'none',
-    borderRadius: 10,
-    cursor: 'pointer',
-    boxShadow: '0 3px 8px rgba(40, 167, 69, 0.6)',
-    transition: 'background-color 0.3s ease',
-  },
+  marginTop: 10,
+  padding: '14px 0',
+  backgroundColor: '#28a745', // hijau
+  color: 'white',
+  fontWeight: '700',
+  fontSize: 18,
+  border: 'none',
+  borderRadius: 10,
+  cursor: 'pointer',
+  boxShadow: '0 3px 8px rgba(40, 167, 69, 0.6)',
+  transition: 'background-color 0.3s ease',
+},
+'button:hover': {
+  backgroundColor: '#218838', // Sedikit lebih gelap dari #28a745
+},
 };
 
 export default Aspirasi;
