@@ -82,11 +82,10 @@ export default function RegisterPage() {
         <div
           className="w-full h-full"
           style={{
-        backgroundImage: "url('/images/masjid-register.jpg')",
+        backgroundImage: "url('/bg2.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        opacity: 0.6, // ensure fully visible
+        backgroundRepeat: 'no-repeat', // ensure fully visible
         filter: 'none', // remove any darkening filter
           }}
         ></div>

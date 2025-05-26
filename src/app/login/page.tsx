@@ -85,7 +85,7 @@ export default function LoginPage() {
   return (
 <div
   className="flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat px-4 sm:px-6 lg:px-8"
-  style={{ backgroundImage: "url('/bg1.jpg')" }}>
+  style={{ backgroundImage: "url('/bg2.jpg')" }}>
   <div className="bg-white/70 backdrop-blur-lg rounded-xl shadow-2xl w-full max-w-4xl mx-auto overflow-hidden flex flex-col md:flex-row animate__animated animate__fadeInDown">
     {/* Left Form Side */}
     <div className="w-full md:w-1/2 p-6 sm:p-10 lg:p-16 space-y-5 animate__animated animate__fadeInLeft">
