@@ -20,6 +20,7 @@ interface PengeluaranItem {
   tanggal: string;
   deskripsi: string;
   user_id: number;
+  nota?: string;
   user?: {
     name: string;
   };
@@ -160,13 +161,14 @@ const Pengeluaran: React.FC = () => {
 
     autoTable(doc, {
       startY: 30,
-      head: [['No', 'Keperluan', 'Jumlah', 'Tanggal', 'Deskripsi', 'Dibuat Oleh']],
+      head: [['No', 'Keperluan', 'Jumlah', 'Tanggal', 'Deskripsi', 'Nota', 'Dibuat Oleh']],
       body: pengeluaran.map((item, index) => [
         index + 1,
         item.keperluan,
         `Rp ${item.jumlah_pengeluaran.toLocaleString('id-ID')}`,
         formatDate(item.tanggal),
         item.deskripsi,
+        item.nota ? 'Ada' : 'Tidak ada',
         item.user?.name || 'Tidak diketahui'
       ]),
       styles: { fontSize: 9 },
@@ -290,6 +292,7 @@ const Pengeluaran: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat Oleh</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
               </tr>
@@ -297,7 +300,7 @@ const Pengeluaran: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {pengeluaran.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
                     Tidak ada data pengeluaran
                   </td>
                 </tr>
@@ -314,6 +317,18 @@ const Pengeluaran: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-gray-900 max-w-xs">
                       <div className="line-clamp-2">{item.deskripsi}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {item.nota ? (
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.nota}`}
+                          alt="Nota"
+                          className="h-12 w-auto rounded shadow object-contain cursor-pointer"
+                          onClick={() => window.open(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.nota}`, '_blank')}
+                        />
+                      ) : (
+                        <span className="text-gray-400">Tidak ada</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-900">
                       {item.user?.name || `User ID: ${item.user_id}`}

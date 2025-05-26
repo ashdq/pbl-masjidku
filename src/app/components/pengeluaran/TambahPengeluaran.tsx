@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
-import { FiArrowLeft, FiDollarSign, FiCalendar, FiFileText, FiCheckCircle } from 'react-icons/fi';
+import { FiArrowLeft, FiDollarSign, FiCalendar, FiFileText, FiCheckCircle, FiUpload } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 const TambahPengeluaran = () => {
@@ -14,8 +14,10 @@ const TambahPengeluaran = () => {
     keperluan: '',
     jumlah_pengeluaran: '',
     tanggal: new Date().toISOString().split('T')[0],
-    deskripsi: ''
+    deskripsi: '',
+    nota: null as File | null
   });
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -37,25 +39,67 @@ const TambahPengeluaran = () => {
     }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('File harus berupa gambar');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Ukuran file maksimal 5MB');
+        return;
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        nota: file
+      }));
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    // Validasi nota wajib diisi
+    if (!formData.nota) {
+      setError('Nota pembayaran wajib diupload!');
+      setLoading(false);
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Token tidak ditemukan');
 
+      // Create FormData object to handle file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('keperluan', formData.keperluan);
+      formDataToSend.append('jumlah_pengeluaran', formData.jumlah_pengeluaran);
+      formDataToSend.append('tanggal', formData.tanggal);
+      formDataToSend.append('deskripsi', formData.deskripsi);
+      if (formData.nota) {
+        formDataToSend.append('nota', formData.nota);
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pengeluaran`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          ...formData,
-          jumlah_pengeluaran: parseFloat(formData.jumlah_pengeluaran)
-        })
+        body: formDataToSend
       });
 
       if (!response.ok) {
@@ -219,6 +263,58 @@ const TambahPengeluaran = () => {
                 rows={4}
                 placeholder="Detail pengeluaran (opsional)"
               />
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="nota">
+                Nota Pembayaran
+              </label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                <div className="space-y-1 text-center">
+                  {previewUrl ? (
+                    <div className="mb-4">
+                      <img
+                        src={previewUrl}
+                        alt="Preview nota"
+                        className="mx-auto h-32 w-auto object-contain"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreviewUrl(null);
+                          setFormData(prev => ({ ...prev, nota: null }));
+                        }}
+                        className="mt-2 text-sm text-red-600 hover:text-red-800"
+                      >
+                        Hapus gambar
+                      </button>
+                    </div>
+                  ) : (
+                    <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
+                  )}
+                  <div className="flex text-sm text-gray-600">
+                    <label
+                      htmlFor="nota"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                    >
+                      <span>{previewUrl ? 'Ganti gambar' : 'Upload gambar'}</span>
+                      <input
+                        id="nota"
+                        name="nota"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="sr-only"
+                        required
+                      />
+                    </label>
+                    <p className="pl-1">atau drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    PNG, JPG, GIF sampai 5MB
+                  </p>
+                </div>
+              </div>
             </div>
 
             <motion.button
