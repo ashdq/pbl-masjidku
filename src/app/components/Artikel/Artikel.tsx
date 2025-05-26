@@ -72,10 +72,10 @@ const Artikel: React.FC = () => {
 
       <main style={styles.grid}>
         {daftarArtikel.map((artikel) => (
-          <div key={artikel.id} style={styles.card}>
+          <article key={artikel.id} style={styles.card} tabIndex={0} aria-label={artikel.judul}>
             <h2 style={styles.cardTitle}>{artikel.judul}</h2>
             <p style={styles.cardContent}>{artikel.isi}</p>
-          </div>
+          </article>
         ))}
       </main>
 
@@ -88,59 +88,71 @@ const Artikel: React.FC = () => {
 
 const styles: { [key: string]: React.CSSProperties } = {
   page: {
-    backgroundColor: '#f7fdf8',
-    fontFamily: 'Segoe UI, sans-serif',
-    padding: '0 24px',
-    color: '#111',
+    backgroundColor: '#f0f9f4',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    padding: '0 20px 60px',
+    color: '#1a1a1a',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
   },
   header: {
     textAlign: 'center',
-    padding: '60px 20px 20px',
+    padding: '60px 15px 30px',
   },
   headerTitle: {
-    fontSize: 40,
-    fontWeight: 800,
-    color: '#28a745',
-    marginBottom: 10,
+    fontSize: '3rem',
+    fontWeight: 900,
+    color: '#2d6a4f',
+    marginBottom: '12px',
+    lineHeight: 1.1,
   },
   subtitle: {
-    fontSize: 18,
-    color: '#555',
+    fontSize: '1.25rem',
+    color: '#4a4a4a',
+    maxWidth: 480,
+    margin: '0 auto',
+    fontWeight: 500,
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '1fr',
-    maxWidth: 900,
-    margin: '40px auto',
-    gap: 40,
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '36px',
+    maxWidth: 960,
+    width: '100%',
+    margin: '40px auto 0',
   },
   card: {
     backgroundColor: '#ffffff',
-    padding: 32,
-    borderRadius: 20,
-    border: '1px solid #d4edda',
-    boxShadow: '0 8px 24px rgba(0,0,0,0.05)',
+    padding: '28px 30px',
+    borderRadius: 16,
+    border: '1px solid #a7d7a7',
+    boxShadow: '0 6px 20px rgba(45, 106, 79, 0.15)',
     whiteSpace: 'pre-wrap',
-    transition: 'transform 0.2s',
+    cursor: 'default',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    outline: 'none',
+
+    // Hover & Focus effect
   },
   cardTitle: {
-    fontSize: 26,
+    fontSize: '1.8rem',
     fontWeight: 700,
     marginBottom: 18,
-    color: '#1e4620',
+    color: '#1b4332',
   },
   cardContent: {
-    fontSize: 17,
-    lineHeight: 1.8,
+    fontSize: '1.05rem',
+    lineHeight: 1.7,
     color: '#333',
   },
   footer: {
     textAlign: 'center',
-    padding: '30px 0',
+    padding: '30px 15px',
     fontSize: 14,
-    color: '#999',
+    color: '#666',
     borderTop: '1px solid #ddd',
-    marginTop: 60,
+    marginTop: 'auto',
   },
 };
 

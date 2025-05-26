@@ -15,30 +15,39 @@ export default function Galeri() {
       <Head>
         <title>Galeri Kegiatan | Masjiku</title>
       </Head>
-      <div className="min-h-screen bg-gray-50 py-10 px-4">
-        <h1 className="text-3xl font-bold text-green-700 text-center mb-8">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-white py-10 px-4">
+        <h1 className="text-4xl font-extrabold text-green-800 text-center mb-12">
           Galeri Kegiatan Masjid
         </h1>
-        <div className="flex flex-col gap-10 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {photos.map((photo, index) => (
             <div
               key={index}
-              className="rounded-xl overflow-hidden shadow-lg bg-white hover:shadow-2xl transition duration-300"
+              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 group"
             >
-              <div className="relative w-full h-[400px] sm:h-[500px]">
+              <div className="relative w-full h-64 overflow-hidden">
                 <Image
                   src={photo.src}
                   alt={photo.caption}
                   fill
                   style={{ objectFit: "cover" }}
-                  className="w-full h-full"
+                  className="transform group-hover:scale-105 transition-transform duration-500"
                   priority={index === 0}
                 />
               </div>
-              <div className="p-6">
-                <p className="text-center text-green-800 font-bold text-xl">
+              <div className="p-5 bg-green-50">
+                <p className="text-center text-green-900 font-semibold text-lg">
                   {photo.caption}
                 </p>
+                <div className="flex justify-center mt-4">
+                  <a
+                    href={photo.src}
+                    download
+                    className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors"
+                  >
+                    Download
+                  </a>
+                </div>
               </div>
             </div>
           ))}
