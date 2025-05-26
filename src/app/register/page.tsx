@@ -77,9 +77,19 @@ export default function RegisterPage() {
 <div
   className="min-h-screen relative flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
 >
-      <div className="absolute inset-0 z-0 opacity-10">
-        {/* Subtle background pattern or illustration */}
-        <div className="w-full h-full bg-topography-pattern" style={{ backgroundImage: "url('/images/pattern-green.svg')", backgroundSize: 'cover', opacity: 0.1 }}></div>
+      <div className="absolute inset-0 z-0">
+        {/* Full resolution background image, no dark overlay */}
+        <div
+          className="w-full h-full"
+          style={{
+        backgroundImage: "url('/images/masjid-register.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        opacity: 0.6, // ensure fully visible
+        filter: 'none', // remove any darkening filter
+          }}
+        ></div>
       </div>
 
       <div className="container mx-auto max-w-lg relative z-10">
