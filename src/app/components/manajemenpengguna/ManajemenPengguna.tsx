@@ -1,4 +1,6 @@
 'use client'
+import Swal from 'sweetalert2'
+
 import React, { useState, useEffect } from 'react'
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiEdit2, FiTrash2, FiSave, FiX } from 'react-icons/fi'
 import { useAuth } from '../../context/AuthContext'
@@ -106,9 +108,20 @@ const ManajemenPengguna = () => {
     }
   }, [currentUser])
 
-  const handleDelete = async (userId: number) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) return
 
+const handleDelete = async (userId: number) => {
+  const result = await Swal.fire({
+    title: 'Apakah Anda yakin?',
+    text: 'Pengguna yang dihapus tidak dapat dikembalikan!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Ya, hapus!',
+    cancelButtonText: 'Batal'
+  })
+
+  if (result.isConfirmed) {
     try {
       const token = localStorage.getItem('token')
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${userId}`, {
@@ -119,18 +132,28 @@ const ManajemenPengguna = () => {
         },
         credentials: 'include',
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete user')
       }
-      
+
       fetchUsers(pagination.current_page)
-      alert('Pengguna berhasil dihapus')
+
+      await Swal.fire({
+        title: 'Berhasil!',
+        text: 'Pengguna berhasil dihapus.',
+        icon: 'success'
+      })
     } catch (error) {
       console.error('Error deleting user:', error)
-      alert('Gagal menghapus pengguna')
+      await Swal.fire({
+        title: 'Gagal!',
+        text: 'Gagal menghapus pengguna.',
+        icon: 'error'
+      })
     }
   }
+}
 
   const handleEdit = (user: User) => {
     setEditingUserId(user.id)

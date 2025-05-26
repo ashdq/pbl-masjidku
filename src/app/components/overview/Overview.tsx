@@ -488,41 +488,44 @@ const Overview = () => {
         </div>
 
         {/* Jadwal Adzan */}
-        <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4">
-          <h2 className="text-lg font-semibold text-gray-700 text-center mb-3">Jadwal Adzan</h2>
-          <div className="mb-4">
-            <label htmlFor="kota" className="block text-sm font-medium text-gray-700 mb-1">
-              Pilih Kota
-            </label>
-            <select
-              id="kota"
-              value={selectedKota.nama}
-              onChange={(e) => {
-                const kota = DAFTAR_KOTA.find(k => k.nama === e.target.value);
-                if (kota) setSelectedKota(kota);
-              }}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm text-gray-900 bg-white"
-            >
-              {DAFTAR_KOTA.map((kota) => (
-                <option key={kota.nama} value={kota.nama} className="text-gray-900">
-                  {kota.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="overflow-x-auto">
-            {isLoadingJadwal ? (
-              <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-              </div>
-            ) : (
-              <JadwalAdzanTable jadwal={jadwalAdzan} />
-            )}
-            <p className="text-xs text-gray-500 text-center mt-2">
-              Jadwal adzan untuk {selectedKota.nama}
-            </p>
-          </div>
-        </div>
+<div className="bg-white border border-gray-200 rounded-xl shadow-md p-6 md:p-8 transition-shadow hover:shadow-lg">
+  <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Jadwal Adzan</h2>
+
+  <div className="mb-6">
+    <label htmlFor="kota" className="block text-sm font-medium text-gray-700 mb-2">
+      Pilih Kota
+    </label>
+    <select
+      id="kota"
+      value={selectedKota.nama}
+      onChange={(e) => {
+        const kota = DAFTAR_KOTA.find((k) => k.nama === e.target.value);
+        if (kota) setSelectedKota(kota);
+      }}
+      className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm transition"
+    >
+      {DAFTAR_KOTA.map((kota) => (
+        <option key={kota.nama} value={kota.nama}>
+          {kota.nama}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <div className="overflow-x-auto">
+    {isLoadingJadwal ? (
+      <div className="flex justify-center items-center h-32">
+        <div className="w-10 h-10 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
+      </div>
+    ) : (
+      <JadwalAdzanTable jadwal={jadwalAdzan} />
+    )}
+    <p className="text-sm text-gray-500 text-center mt-4">
+      Jadwal adzan untuk <span className="font-medium text-gray-700">{selectedKota.nama}</span>
+    </p>
+  </div>
+</div>
+
       </div>
     </div>
   );

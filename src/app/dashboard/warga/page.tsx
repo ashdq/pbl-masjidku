@@ -11,7 +11,6 @@ import Galeri from '../../components/Galeri/Galeri';
 import Aspirasi from '../../components/Aspirasi/Aspirasi';
 import Artikel from '../../components/Artikel/Artikel';
 
-
 export default function WargaDashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -79,7 +78,7 @@ export default function WargaDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Donasi", "Galeri", "Aspirasi", "Artikel"].map((tab) => (
+        {["Overview", "Donasi", "Galeri", "Aspirasi", "Artikel", "Profil"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
