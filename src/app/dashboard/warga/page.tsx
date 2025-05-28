@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CalendarDays, Download } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Logout from '../../components/Logout';
@@ -9,26 +9,19 @@ import Overview from '../../components/overview/Overview';
 import Donasi from '../../components/donasi/Donasi';
 import Galeri from '../../components/Galeri/Galeri';
 import Aspirasi from '../../components/Aspirasi/Aspirasi';
-import Artikel from '../../components/Artikel/Artikel';
+import Artikel from '../../components/Artikel/ArtikelMenu';
 
 export default function WargaDashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Overview");
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Redirect ke login jika tidak ada user dan loading selesai
     if (!loading && !user) {
       router.replace('/login');
     }
   }, [user, loading, router]);
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-  };
-
-  // Tampilkan loading spinner yang lebih menarik
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -40,7 +33,6 @@ export default function WargaDashboard() {
     );
   }
 
-  // Jika tidak ada user, jangan tampilkan apa-apa (akan di-redirect oleh useEffect)
   if (!user) {
     return null;
   }
@@ -52,11 +44,11 @@ export default function WargaDashboard() {
       case "Donasi":
         return <Donasi />;
       case "Galeri":
-          return <Galeri />;
+        return <Galeri />;
       case "Aspirasi":
-          return <Aspirasi />;
+        return <Aspirasi />;
       case "Artikel":
-          return <Artikel />;
+        return <Artikel />;
       default:
         return null;
     }
@@ -78,7 +70,7 @@ export default function WargaDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Donasi", "Galeri", "Aspirasi", "Artikel", "Profil"].map((tab) => (
+        {["Overview", "Donasi", "Galeri", "Aspirasi", "Artikel"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
@@ -86,7 +78,7 @@ export default function WargaDashboard() {
                 ? "bg-green-600 text-white shadow-md"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
-            onClick={() => handleTabChange(tab)}
+            onClick={() => setActiveTab(tab)}
           >
             {tab}
           </button>
