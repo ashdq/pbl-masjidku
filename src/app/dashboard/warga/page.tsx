@@ -27,7 +27,7 @@ export default function WargaDashboard() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
-          <p className="mt-2 text-gray-600">Memuat data...</p>
+          <p className="mt-2 text-gray-600">LOADINGG BOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSs</p>
         </div>
       </div>
     );
