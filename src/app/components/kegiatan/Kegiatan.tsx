@@ -352,9 +352,34 @@ const handleDelete = async (id: number) => {
                   <td className="px-6 py-4 whitespace-nowrap text-gray-900">
                     {new Date(item.tanggal_kegiatan).toLocaleDateString('id-ID')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                    {item.waktu_kegiatan}
-                  </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                    {
+                      (() => {
+                      const tanggalRaw = item.tanggal_kegiatan;
+                      const waktuRaw = item.waktu_kegiatan;
+
+                      // Ambil tanggal saja (YYYY-MM-DD)
+                      const tanggal = tanggalRaw && tanggalRaw.includes('T')
+                        ? tanggalRaw.split('T')[0]
+                        : tanggalRaw;
+
+                      // Ambil jam:menit:detik saja dari waktu (HH:mm:ss)
+                      let waktu = waktuRaw;
+                      if (waktuRaw && waktuRaw.includes('T')) {
+                        const afterT = waktuRaw.split('T')[1];
+                        waktu = afterT ? afterT.split('.')[0] : '';
+                      } else if (waktuRaw && waktuRaw.length > 8) {
+                        // Jika waktuRaw seperti '19:30:00.000000Z'
+                        waktu = waktuRaw.split('.')[0];
+                      }
+
+                      // Jika waktu adalah '00:00:00', jangan tampilkan
+                      return waktu && waktu !== '00:00:00'
+                        ? `${tanggal} ${waktu}`
+                        : tanggal;
+                      })()
+                    }
+                    </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.gambar_kegiatan && (
                       <div className="relative w-16 h-16">
