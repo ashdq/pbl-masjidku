@@ -385,23 +385,23 @@ const Overview = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Total Donasi */}
         <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4 flex flex-col items-center justify-center">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Total Donasi</h2>
+          <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Total Donasi</h2>
           {isLoadingDonasi ? (
             <div className="flex items-center justify-center h-8">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
             </div>
           ) : (
             <>
-              <p className="text-2xl font-bold text-green-600">
+                <p className="text-4xl font-extrabold text-green-600 mb-4">
                 Rp {totalDonasiBulanIni.toLocaleString('id-ID')}
-              </p>
+                </p>
             </>
           )}
         </div>
 
         {/* Carousel Kegiatan */}
-        <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4">
-          <h2 className="text-lg font-semibold text-gray-700 text-center mb-3">Kegiatan</h2>
+        <div className="bg-white border border-gray-200 rounded-xl shadow-md p-6 md:p-8 transition-shadow hover:shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Kegiatan</h2>
           <div className="relative rounded-md overflow-hidden">
             {isLoadingKegiatan ? (
               <div className="w-full h-48 md:h-60 bg-gray-100 flex items-center justify-center">
