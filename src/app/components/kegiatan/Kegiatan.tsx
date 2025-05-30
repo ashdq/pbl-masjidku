@@ -333,7 +333,7 @@ const handleDelete = async (id: number) => {
       {/* List Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-gray-900">Daftar Kegiatan</h2>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto relative">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -356,14 +356,14 @@ const handleDelete = async (id: number) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {kegiatan.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
+                <tr key={item.id} className="hover:bg-gray-50 relative z-0">
                   <td className="px-6 py-4 whitespace-nowrap text-gray-900 font-medium">
                     {item.nama_kegiatan}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-900">
                     {new Date(item.tanggal_kegiatan).toLocaleDateString('id-ID')}
                   </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-900">
                     {
                       (() => {
                       const tanggalRaw = item.tanggal_kegiatan;
@@ -390,10 +390,10 @@ const handleDelete = async (id: number) => {
                         : tanggal;
                       })()
                     }
-                    </td>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.gambar_kegiatan && (
-                      <div className="relative w-16 h-16">
+                      <div className="relative w-16 h-16 z-0 pointer-events-none">
                         <Image
                           src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.gambar_kegiatan}`}
                           alt={item.nama_kegiatan}
@@ -404,7 +404,7 @@ const handleDelete = async (id: number) => {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 relative z-10">
                       <button
                         onClick={() => handleEdit(item)}
                         className="text-blue-600 hover:text-blue-900"
