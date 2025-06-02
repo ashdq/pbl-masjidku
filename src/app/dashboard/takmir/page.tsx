@@ -11,6 +11,7 @@ import LaporanDonasi from '../../components/donasi/LaporanDonasi';
 import Pengeluaran from '../../components/pengeluaran/Pengeluaran';
 import LaporanAspirasi from '../../components/Aspirasi/LaporanAspirasi';
 import Profile from '../../components/profile/profile';
+import ArtikelTakmir from '../../components/Artikel/ArtikelTakmir';
 
 
 export default function TakmirDashboard() {
@@ -59,6 +60,8 @@ export default function TakmirDashboard() {
         return <Pengeluaran />;
       case "Laporan Aspirasi":
         return <LaporanAspirasi />;
+      case "Artikel":
+        return <ArtikelTakmir />;
       case "Profile":
         return <Profile />;
       default:
@@ -82,7 +85,7 @@ export default function TakmirDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Laporan Keuangan", "Laporan Donasi", "Laporan Aspirasi", "Pengelolaan Kegiatan", "Profile"].map((tab) => (
+        {["Overview", "Laporan Keuangan", "Laporan Donasi", "Laporan Aspirasi", "Pengelolaan Kegiatan", "Artikel", "Profile"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
