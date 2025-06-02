@@ -10,6 +10,7 @@ import Donasi from '../../components/donasi/Donasi';
 import Galeri from '../../components/Galeri/Galeri';
 import Aspirasi from '../../components/Aspirasi/Aspirasi';
 import Artikel from '../../components/Artikel/ArtikelMenu';
+import Profile from '../../components/profile/profile';
 
 export default function WargaDashboard() {
   const { user, loading } = useAuth();
@@ -49,6 +50,8 @@ export default function WargaDashboard() {
         return <Aspirasi />;
       case "Artikel":
         return <Artikel />;
+      case "Profile":
+        return <Profile />;
       default:
         return null;
     }
@@ -83,6 +86,17 @@ export default function WargaDashboard() {
             {tab}
           </button>
         ))}
+        <button
+          key="Profile"
+          className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
+            activeTab === "Profile"
+              ? "bg-green-600 text-white shadow-md"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+          onClick={() => setActiveTab("Profile")}
+        >
+          Profile
+        </button>
       </div>
 
       {/* Content */}

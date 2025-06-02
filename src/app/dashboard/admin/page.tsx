@@ -11,6 +11,7 @@ import PengelolaanKegiatan from '../../components/kegiatan/Kegiatan';
 import LaporanDonasi from '../../components/donasi/LaporanDonasi';
 import Pengeluaran from '../../components/pengeluaran/Pengeluaran';
 import LaporanAspirasi from '../../components/Aspirasi/LaporanAspirasi';
+import Profile from '../../components/profile/profile';
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -61,6 +62,8 @@ export default function AdminDashboard() {
         return <Pengeluaran />;
       case "Laporan Aspirasi":
         return <LaporanAspirasi />;
+      case "Profile":
+        return <Profile />;
       default:
         return null;
     }
