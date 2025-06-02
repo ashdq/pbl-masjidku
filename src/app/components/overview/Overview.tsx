@@ -315,16 +315,31 @@ const Overview = () => {
   }), [monthlyDonationData]);
 
   // Opsi Chart
-  const chartOptions = useMemo(() => ({
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      title: { display: false },
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#f0fdf4',
+      titleColor: '#15803d',
+      bodyColor: '#166534',
+      borderColor: '#86efac',
+      borderWidth: 1,
     },
-    scales: {
-      y: { beginAtZero: true },
+  },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: { color: '#4b5563', font: { size: 12 } },
     },
-  }), []);
+    y: {
+      grid: { color: '#e5e7eb' },
+      ticks: { color: '#4b5563', font: { size: 12 } },
+    },
+  },
+};
+
 
   // Event handlers dengan useCallback
   const handleNext = useCallback(() => {
@@ -344,148 +359,183 @@ const Overview = () => {
       {/* Content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {/* Grafik Donasi */}
-        <div className="p-4 md:p-6 bg-gradient-to-br from-green-50 to-white rounded-lg shadow-lg md:col-span-2">
-          <h2 className="text-xl font-bold text-green-700 mb-4 text-center">Grafik Donasi Bulanan</h2>
+        <div className="p-4 md:p-6 bg-white rounded-xl border border-gray-200 shadow-sm md:col-span-2">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 text-center">Grafik Donasi Bulanan</h2>
           {isLoadingChart ? (
             <div className="flex items-center justify-center h-64 md:h-80">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-            </div>
-          ) : (
-            <div className="h-64 md:h-80">
-              <Bar 
-                data={chartData} 
-                options={chartOptions} 
-                height="100%"
-              />
-            </div>
-          )}
+              <div className="animate-spin h-6 w-6 rounded-full border-2 border-green-500 border-t-transparent"></div>
+              </div>) : (<div className="h-64 md:h-80"><Bar data={chartData} options={chartOptions} />
+          </div>)}
         </div>
 
+
         {/* Pembayaran Terakhir */}
-        <div className="p-4 md:p-6 bg-gradient-to-br from-green-50 to-white rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold text-green-700 mb-4 text-center">Riwayat Donasi Terakhir</h2>
+        <div className="p-4 md:p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 text-center">
+            Riwayat Donasi Terakhir
+          </h2>
+
           {isLoadingRecentDonations ? (
-            <div className="flex items-center justify-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+            <div className="flex items-center justify-center h-24">
+              <div className="animate-spin h-6 w-6 rounded-full border-2 border-green-500 border-t-transparent"></div>
             </div>
           ) : (
             <div className="space-y-3">
-              {recentDonations.map((payment, idx) => (
-                <PaymentItem key={idx} payment={payment} />
-              ))}
-              {recentDonations.length === 0 && (
-                <p className="text-center text-gray-500">Belum ada data donasi</p>
+              {recentDonations.length > 0 ? (
+                recentDonations.map((payment, idx) => (
+                  <div
+                    key={idx}
+                    className="px-4 py-3 bg-gray-50 rounded-lg border border-gray-100 shadow-sm hover:shadow transition duration-200"
+                  >
+                    <PaymentItem payment={payment} />
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-400 italic">Belum ada data donasi</p>
               )}
             </div>
           )}
         </div>
+
       </div>
 
       {/* Menu Bawah */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Total Donasi */}
-        <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4 flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Total Donasi</h2>
-          {isLoadingDonasi ? (
-            <div className="flex items-center justify-center h-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
-            </div>
-          ) : (
-            <>
-                <p className="text-4xl font-extrabold text-green-600 mb-4">
-                Rp {totalDonasiBulanIni.toLocaleString('id-ID')}
-                </p>
-            </>
-          )}
-        </div>
+<div className="bg-white border border-gray-200 rounded-md shadow-sm p-4 flex flex-col items-center justify-center max-h-48">
+    <h2 className="text-xl font-bold text-green-700 mb-4 text-center">Total Donasi</h2>
+    {isLoadingDonasi ? (
+      <div className="flex items-center justify-center h-8">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
+      </div>
+    ) : (
+      <p className="text-4xl font-extrabold text-green-600 mb-4">
+        Rp {totalDonasiBulanIni.toLocaleString('id-ID')}
+      </p>
+    )}
+  </div>
 
         {/* Carousel Kegiatan */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-md p-6 md:p-8 transition-shadow hover:shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Kegiatan</h2>
-          <div className="relative rounded-md overflow-hidden">
+        <div
+          id="default-carousel"
+          className="relative w-full"
+          data-carousel="slide"
+        >
+          {/* Carousel wrapper */}
+          <div className="relative h-120 overflow-hidden rounded-lg md:h-60">
             {isLoadingKegiatan ? (
-              <div className="w-full h-48 md:h-60 bg-gray-100 flex items-center justify-center">
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
               </div>
             ) : kegiatan.length > 0 ? (
-              <>
-                <div className="w-full h-48 md:h-60 bg-gray-200 flex items-center justify-center">
-                  <img
-                    src={kegiatan[currentSlide].gambar_kegiatan 
-                      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${kegiatan[currentSlide].gambar_kegiatan}`
-                      : '/placeholder-image.jpg'}
-                    alt={kegiatan[currentSlide].nama_kegiatan}
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/placeholder-image.jpg';
-                    }}
-                  />
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2">
-                  <p className="text-sm font-medium">{kegiatan[currentSlide].nama_kegiatan}</p>
-                  <p className="text-xs text-gray-200">
-                    {
-                      (() => {
-                        const tanggalRaw = kegiatan[currentSlide].tanggal_kegiatan;
-                        const waktuRaw = kegiatan[currentSlide].waktu_kegiatan;
+              kegiatan.map((item, index) => {
+                const isActive = currentSlide === index;
 
-                        // Ambil tanggal saja (YYYY-MM-DD)
-                        const tanggal = tanggalRaw && tanggalRaw.includes('T')
-                          ? tanggalRaw.split('T')[0]
-                          : tanggalRaw;
+                // Format tanggal
+                const tanggalRaw = item.tanggal_kegiatan;
+                const waktuRaw = item.waktu_kegiatan;
 
-                        // Ambil jam:menit:detik saja dari waktu (HH:mm:ss)
-                        let waktu = waktuRaw;
-                        if (waktuRaw && waktuRaw.includes('T')) {
-                          const afterT = waktuRaw.split('T')[1];
-                          waktu = afterT ? afterT.split('.')[0] : '';
-                        } else if (waktuRaw && waktuRaw.length > 8) {
-                          // Jika waktuRaw seperti '19:30:00.000000Z'
-                          waktu = waktuRaw.split('.')[0];
-                        }
+                const tanggal = tanggalRaw && tanggalRaw.includes("T")
+                  ? tanggalRaw.split("T")[0]
+                  : tanggalRaw;
 
-                        // Jika waktu adalah '00:00:00', jangan tampilkan
-                        return waktu && waktu !== '00:00:00'
-                          ? `${tanggal} ${waktu}`
-                          : tanggal;
-                      })()
-                    }
-                  </p>
-                </div>
-                <button
-                  onClick={handlePrev}
-                  className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/80 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-white transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/80 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-white transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </>
+                let waktu = waktuRaw;
+                if (waktuRaw && waktuRaw.includes("T")) {
+                  const afterT = waktuRaw.split("T")[1];
+                  waktu = afterT ? afterT.split(".")[0] : "";
+                } else if (waktuRaw && waktuRaw.length > 8) {
+                  waktu = waktuRaw.split(".")[0];
+                }
+
+                const tanggalWaktu =
+                  waktu && waktu !== "00:00:00" ? `${tanggal} ${waktu}` : tanggal;
+
+                return (
+                  <div
+                    key={index}
+                    className={`${isActive ? "block" : "hidden"} duration-700 ease-in-out`}
+                    data-carousel-item
+                  >
+                    <img
+                      src={
+                        item.gambar_kegiatan
+                          ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.gambar_kegiatan}`
+                          : "/placeholder-image.jpg"
+                      }
+                      alt={item.nama_kegiatan}
+                      className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 object-cover h-full"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
+                      }}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2 text-center">
+                      <p className="text-sm font-medium">{item.nama_kegiatan}</p>
+                      <p className="text-xs text-gray-200">{tanggalWaktu}</p>
+                    </div>
+                  </div>
+                );
+              })
             ) : (
-              <div className="w-full h-48 md:h-60 bg-gray-100 flex items-center justify-center">
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                 <p className="text-gray-500">Tidak ada kegiatan</p>
               </div>
             )}
           </div>
-          {kegiatan.length > 0 && (
-            <div className="flex justify-center mt-2 space-x-1">
-              {kegiatan.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-2 h-2 rounded-full ${
-                    currentSlide === index ? 'bg-green-500' : 'bg-gray-300'
-                  } transition-colors duration-300`}
-                  onClick={() => setCurrentSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
+
+          {/* Slider controls */}
+          <button
+            type="button"
+            className="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+            data-carousel-prev
+            onClick={handlePrev}
+          >
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white">
+              <svg
+                className="w-4 h-4 text-white rtl:rotate-180"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 1 1 5l4 4"
                 />
-              ))}
-            </div>
-          )}
+              </svg>
+              <span className="sr-only">Previous</span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+            data-carousel-next
+            onClick={handleNext}
+          >
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white">
+              <svg
+                className="w-4 h-4 text-white rtl:rotate-180"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m1 9 4-4-4-4"
+                />
+              </svg>
+              <span className="sr-only">Next</span>
+            </span>
+          </button>
         </div>
+
 
         {/* Jadwal Adzan */}
 <div className="bg-white border border-gray-200 rounded-xl shadow-md p-6 md:p-8 transition-shadow hover:shadow-lg">

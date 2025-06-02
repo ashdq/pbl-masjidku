@@ -49,9 +49,7 @@ const ArtikelMenu: React.FC = () => {
       </header>
 
       {!activeArticle && (
-        <>
-          <p style={styles.subtitle}>Pilih artikel untuk membaca lebih lanjut</p>
-          <main style={styles.grid}>
+        <> <main style={styles.grid}>
             {articleItems.map((item) => (
               <div
                 key={item.key}
@@ -116,7 +114,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column' as const,
     gap: 20,
-    maxWidth: 720,
+    maxWidth: 840,
     margin: '0 auto',
   },
   cardContainer: {
@@ -129,8 +127,8 @@ const styles = {
     transition: 'transform 0.2s ease',
   },
   thumbnail: {
-    width: 120,
-    height: 100,
+    width: 170,
+    height: 120,
     objectFit: 'cover' as const,
     flexShrink: 0,
   },
