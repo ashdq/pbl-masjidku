@@ -1,44 +1,48 @@
 import React from 'react';
-import { CheckCircle } from 'lucide-react';
 
 const TipsIbadah: React.FC = () => {
-  const tips = [ 
-    {
-      title: 'Niat yang Ikhlas',
-      desc: 'Awali setiap ibadah dengan niat tulus karena Allah SWT.',
-    },
-    {
-      title: 'Menjaga Waktu Sholat',
-      desc: 'Sholat di awal waktu adalah bukti kecintaan kepada Allah.',
-    },
-    {
-      title: "Membaca Al-Qur'an",
-      desc: 'Luangkan waktu untuk membaca dan merenungi maknanya.',
-    },
-    {
-      title: 'Dzikir dan Doa',
-      desc: 'Jadikan dzikir sebagai penguat hati dan doa sebagai senjata.',
-    },
-    {
-      title: 'Konsistensi',
-      desc: 'Ibadah yang sedikit namun konsisten lebih dicintai Allah.',
-    },
-  ];
-
   return (
-    <div className="p-8 bg-white rounded-2xl shadow-xl max-w-3xl mx-auto mt-10 border border-gray-200">
-      <h1 className="text-4xl font-bold text-teal-700 mb-6 text-center">🕌 Tips Ibadah Harian</h1>
-      <ul className="space-y-5">
-        {tips.map((tip, index) => (
-          <li key={index} className="flex items-start gap-3">
-            <CheckCircle className="text-green-600 mt-1" size={20} />
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800">{tip.title}</h3>
-              <p className="text-gray-600">{tip.desc}</p>
-            </div>
+    <div className="max-w-3xl mx-auto mt-5 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+      <img
+        src="/sholat.jpg"
+        alt="Tips Ibadah Harian"
+        className="w-full h-80 object-cover"
+      />
+      <div className="p-6 text-left">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          Tips Ibadah Harian: Cara Konsisten Beribadah Setiap Hari
+        </h1>
+        <p className="text-sm text-gray-500 mb-4 italic">Sumber: chatgpt-islamic.ai</p>
+
+        <p className="text-gray-700 mb-4">
+          Dalam kehidupan sehari-hari, menjaga konsistensi dalam ibadah adalah hal yang sangat penting bagi setiap Muslim. Namun, kesibukan dan gangguan duniawi sering kali membuat kita lalai dalam menjalankan kewajiban kepada Allah SWT.
+        </p>
+        <p className="text-gray-700 mb-4">
+          Berikut beberapa tips praktis agar ibadah harian tetap terjaga dan menjadi bagian yang menyatu dalam hidup kita:
+        </p>
+
+        <ul className="list-disc list-inside text-gray-700 space-y-3">
+          <li>
+            <strong>Niat yang Ikhlas:</strong> Awali setiap ibadah dengan niat yang tulus hanya karena Allah SWT.
           </li>
-        ))}
-      </ul>
+          <li>
+            <strong>Menjaga Waktu Sholat:</strong> Usahakan sholat tepat waktu, lebih utama lagi di awal waktu.
+          </li>
+          <li>
+            <strong>Membaca Al-Qur'an:</strong> Jadwalkan waktu khusus setiap hari untuk membaca dan mentadabburi Al-Qur'an.
+          </li>
+          <li>
+            <strong>Dzikir dan Doa:</strong> Biasakan berzikir setelah sholat dan memanjatkan doa di waktu-waktu mustajab.
+          </li>
+          <li>
+            <strong>Konsistensi (Istiqamah):</strong> Ibadah yang rutin meskipun sedikit lebih dicintai oleh Allah daripada yang banyak tapi jarang dilakukan.
+          </li>
+        </ul>
+
+        <p className="text-gray-700 mt-6">
+          Dengan menerapkan tips-tips tersebut, semoga kita semua bisa menjadi pribadi yang lebih dekat dengan Allah dan mendapatkan ketenangan hati dalam menjalani kehidupan.
+        </p>
+      </div>
     </div>
   );
 };
