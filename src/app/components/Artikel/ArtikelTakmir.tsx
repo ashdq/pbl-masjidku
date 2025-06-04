@@ -177,13 +177,23 @@ const ArtikelMenu: React.FC = () => {
             throw new Error('No authentication token found');
           }
 
+          // Fetch CSRF cookie
+          await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/sanctum/csrf-cookie`, {
+            credentials: 'include',
+          });
+
+          // Get XSRF-TOKEN from cookie
+          const xsrfToken = getCookie('XSRF-TOKEN') || '';
+
           const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
           const response = await fetch(`${baseUrl}/api/artikel/${id}`, {
             method: 'DELETE',
             headers: {
               'Authorization': `Bearer ${token}`,
               'Accept': 'application/json',
+              'X-XSRF-TOKEN': decodeURIComponent(xsrfToken), // Include XSRF token
             },
+            credentials: 'include', // Ensure cookies are sent
           });
 
           if (!response.ok) {
@@ -290,9 +300,21 @@ const ArtikelMenu: React.FC = () => {
                   <div style={styles.cardContent}>
                     <span style={styles.category}>Artikel</span>
                     <h3 style={styles.title}>{article.judul}</h3>
-                    <span style={styles.readMore}>
-                      Read more <span style={{ fontSize: 16 }}>→</span>
-                    </span>
+                    <div style={styles.cardActions}>
+                      <span style={styles.readMore}>
+                        Read more <span style={{ fontSize: 16 }}>→</span>
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(article.id);
+                        }}
+                        style={styles.deleteButton}
+                        title="Hapus Artikel"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
@@ -503,6 +525,18 @@ const styles = {
     fontSize: '1rem',
     fontWeight: 500,
     flex: 1,
+  } as React.CSSProperties,
+  cardActions: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  deleteButton: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: '#ef4444',
+    cursor: 'pointer',
+    padding: '4px',
   } as React.CSSProperties,
 };
 
