@@ -1,66 +1,246 @@
 'use client';
 
-import React, { useState } from 'react';
-import TipsIbadah from './TipsIbadah';
-import Ceramah from './Ceramah';
-import Fiqih from './Fiqih';
+import React, { useState, useEffect } from 'react';
+import ArticleView from '@/app/components/Artikel/ArticleView';
+import TambahArtikel from '@/app/components/Artikel/TambahArtikel';
+import { Trash2 } from 'lucide-react';
+import Swal from 'sweetalert2';
+
+interface Article {
+  id: number;
+  judul: string;
+  gambar_artikel: string;
+  sumber: string;
+  isi_artikel: string;
+  tanggal_artikel: string;
+}
 
 const ArtikelMenu: React.FC = () => {
   const [activeArticle, setActiveArticle] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
   const [newArticle, setNewArticle] = useState({
-    title: '',
-    source: '',
-    image: null as File | null,
-    content: ''
+    judul: '',
+    sumber: '',
+    gambar_artikel: null as File | null,
+    isi_artikel: '',
+    tanggal_artikel: ''
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
 
-  const articleItems = [
-    {
-      key: 'tips-ibadah',
-      category: 'Tips Ibadah',
-      title: 'Tips Ibadah',
-      image: '/sholat.jpg',
-    },
-    {
-      key: 'ceramah',
-      category: 'Ceramah Singkat',
-      title: 'Ceramah Singkat',
-      image: '/ceramah.jpg',
-    },
-    {
-      key: 'fiqih',
-      category: 'Fiqih Sehari-hari',
-      title: 'Fiqih Sehari-hari',
-      image: '/fiqih.jpg',
-    },
-  ];
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      fetchArticles();
+    }
+  }, [mounted]);
+
+  const fetchArticles = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${baseUrl}/api/artikel`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch articles');
+      }
+
+      const responseData = await response.json();
+      
+      if (responseData.status === 'success' && responseData.data) {
+        setArticles(responseData.data);
+      }
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load articles');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setNewArticle({ ...newArticle, image: e.target.files[0] });
+      const file = e.target.files[0];
+      // Validate file type
+      if (!file.type.match('image/(jpeg|png|jpg)')) {
+        setError('Format file harus jpeg, png, atau jpg');
+        return;
+      }
+      // Validate file size (2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        setError('Ukuran file maksimal 2MB');
+        return;
+      }
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setError('');
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle the form submission
-    // For now, we'll just close the form
-    setShowAddForm(false);
-    setNewArticle({ title: '', source: '', image: null, content: '' });
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      // Fetch CSRF cookie
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/sanctum/csrf-cookie`, {
+        credentials: 'include',
+      });
+
+      // Get XSRF-TOKEN from cookie
+      const xsrfToken = getCookie('XSRF-TOKEN') || '';
+
+      const formDataToSend = new FormData();
+      Object.entries(newArticle).forEach(([key, value]) => {
+        if (
+          key !== 'gambar_artikel' && // Skip gambar_artikel from newArticle
+          value !== undefined &&
+          value !== null
+        ) {
+          formDataToSend.append(key, value);
+        }
+      });
+
+      // Only append gambar_artikel if user selected a new image
+      if (selectedImage) {
+        formDataToSend.append('gambar_artikel', selectedImage);
+      }
+
+      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(`${baseUrl}/api/artikel`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': decodeURIComponent(xsrfToken), // Include XSRF token
+        },
+        body: formDataToSend,
+        credentials: 'include', // Ensure cookies are sent
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create article');
+      }
+
+      await fetchArticles();
+      setShowAddForm(false);
+      resetForm();
+      alert('Artikel berhasil ditambahkan');
+    } catch (error) {
+      console.error('Error creating article:', error);
+      setError(error instanceof Error ? error.message : 'Failed to create article');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Data artikel akan dihapus dan tidak bisa dikembalikan!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, hapus!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            throw new Error('No authentication token found');
+          }
+
+          const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+          const response = await fetch(`${baseUrl}/api/artikel/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Gagal menghapus artikel');
+          }
+
+          fetchArticles();
+
+          Swal.fire({
+            title: "Berhasil!",
+            text: "Artikel berhasil dihapus.",
+            icon: "success"
+          });
+        } catch (error) {
+          console.error('Error deleting article:', error);
+          setError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menghapus artikel');
+
+          Swal.fire({
+            title: "Gagal!",
+            text: "Terjadi kesalahan saat menghapus artikel.",
+            icon: "error"
+          });
+        }
+      }
+    });
+  };
+
+  // Helper function to get cookie
+  function getCookie(name: string): string {
+    if (typeof document === 'undefined') return '';
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() || '';
+    return '';
+  }
+
+  const resetForm = () => {
+    setNewArticle({
+      judul: '',
+      sumber: '',
+      gambar_artikel: null,
+      isi_artikel: '',
+      tanggal_artikel: ''
+    });
+    setSelectedImage(null);
+    setPreviewUrl('');
+    setError('');
   };
 
   const renderActiveContent = () => {
-    switch (activeArticle) {
-      case 'tips-ibadah':
-        return <TipsIbadah />;
-      case 'ceramah':
-        return <Ceramah />;
-      case 'fiqih':
-        return <Fiqih />;
-      default:
-        return null;
-    }
+    if (!activeArticle) return null;
+    
+    const article = articles.find(a => a.id.toString() === activeArticle);
+    if (!article) return null;
+
+    return <ArticleView article={article} />;
   };
 
   return (
@@ -81,90 +261,42 @@ const ArtikelMenu: React.FC = () => {
             </button>
           </div>
 
-          {showAddForm && (
-            <div style={styles.formOverlay}>
-              <div style={styles.formContainer}>
-                <h2 style={styles.formTitle}>Tambah Artikel Baru</h2>
-                <form onSubmit={handleSubmit} style={styles.form}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.label}>Judul Artikel</label>
-                    <input
-                      type="text"
-                      value={newArticle.title}
-                      onChange={(e) => setNewArticle({ ...newArticle, title: e.target.value })}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label style={styles.label}>Sumber</label>
-                    <input
-                      type="text"
-                      value={newArticle.source}
-                      onChange={(e) => setNewArticle({ ...newArticle, source: e.target.value })}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label style={styles.label}>Konten</label>
-                    <textarea
-                      value={newArticle.content}
-                      onChange={(e) => setNewArticle({ ...newArticle, content: e.target.value })}
-                      style={styles.textarea}
-                      required
-                      rows={6}
-                      placeholder="Tulis isi artikel di sini..."
-                    />
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label style={styles.label}>Foto</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      style={styles.fileInput}
-                      required
-                    />
-                  </div>
-                  <div style={styles.formActions}>
-                    <button type="submit" style={styles.submitButton}>
-                      Simpan
-                    </button>
-                    <button 
-                      type="button" 
-                      style={styles.cancelButton}
-                      onClick={() => setShowAddForm(false)}
-                    >
-                      Batal
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+          <TambahArtikel
+            showAddForm={showAddForm}
+            setShowAddForm={setShowAddForm}
+            newArticle={newArticle}
+            setNewArticle={setNewArticle}
+            handleImageChange={handleImageChange}
+            handleSubmit={handleSubmit}
+          />
 
           <main style={styles.grid}>
-            {articleItems.map((item) => (
-              <div
-                key={item.key}
-                style={styles.cardContainer}
-                onClick={() => setActiveArticle(item.key)}
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  style={styles.thumbnail}
-                />
-                <div style={styles.cardContent}>
-                  <span style={styles.category}>{item.category}</span>
-                  <h3 style={styles.title}>{item.title}</h3>
-                  <span style={styles.readMore}>
-                    Read more <span style={{ fontSize: 16 }}>→</span>
-                  </span>
+            {isLoading ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
+            ) : error ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>{error}</div>
+            ) : (
+              articles.map((article) => (
+                <div
+                  key={article.id}
+                  style={styles.cardContainer}
+                  onClick={() => setActiveArticle(article.id.toString())}
+                >
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${article.gambar_artikel}`}
+                    alt={article.judul}
+                    style={styles.thumbnail}
+                  />
+                  <div style={styles.cardContent}>
+                    <span style={styles.category}>Artikel</span>
+                    <h3 style={styles.title}>{article.judul}</h3>
+                    <span style={styles.readMore}>
+                      Read more <span style={{ fontSize: 16 }}>→</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </main>
         </>
       )}
@@ -330,6 +462,7 @@ const styles = {
     borderRadius: 8,
     border: '1px solid #ddd',
     fontSize: '1rem',
+    color: '#000',
   },
   textarea: {
     padding: '10px 12px',
@@ -339,6 +472,7 @@ const styles = {
     resize: 'vertical',
     minHeight: '150px',
     fontFamily: 'inherit',
+    color: '#000',
   } as React.CSSProperties,
   fileInput: {
     padding: '8px 0',
