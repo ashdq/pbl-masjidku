@@ -9,7 +9,7 @@ import Overview from '../../components/overview/Overview';
 import Donasi from '../../components/donasi/Donasi';
 import Galeri from '../../components/Galeri/Galeri';
 import Aspirasi from '../../components/Aspirasi/Aspirasi';
-import Artikel from '../../components/Artikel/ArtikelMenu';
+import Artikel from '../../components/Artikel/ArtikelWarga';
 import Profile from '../../components/profile/profile';
 
 export default function WargaDashboard() {

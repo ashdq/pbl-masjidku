@@ -87,7 +87,7 @@ const Profile = () => {
               <Shield className="h-6 w-6 text-emerald-500 flex-shrink-0" />
               <div>
                 <p className="font-semibold text-gray-800">Peran</p>
-                <p className="text-gray-600 capitalize">{currentUser.role}</p>
+                <p className="text-gray-600 capitalize">{currentUser.roles}</p>
               </div>
             </div>
 
