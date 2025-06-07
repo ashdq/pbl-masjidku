@@ -274,10 +274,10 @@ export default function LandingPage() {
             efisien, transparan, dan mudah diakses.
           </motion.p>
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.07 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => router.push('/register')}
-            className="bg-white text-green-600 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition duration-300 text-lg"
+            className="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold px-8 py-3 rounded-full shadow-lg hover:from-green-600 hover:to-green-800 transition duration-300 text-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
