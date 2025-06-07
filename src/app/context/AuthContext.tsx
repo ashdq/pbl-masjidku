@@ -115,7 +115,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
+      {loading ? (
+      <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+      }}>
+      <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
+      }}>
+      <div style={{
+        width: 64,
+        height: 64,
+        border: '6px solid #fff',
+        borderTop: '6px solid #43e97b',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
+      }} />
+      <style>
+        {`
+        @keyframes spin {
+        0% { transform: rotate(0deg);}
+        100% { transform: rotate(360deg);}
+        }
+        `}
+      </style>
+      <h2 style={{
+        marginTop: 24,
+        color: '#fff',
+        fontWeight: 700,
+        letterSpacing: 1,
+        fontSize: 24,
+        textShadow: '0 2px 8px rgba(0,0,0,0.15)'
+      }}>
+        Memuat...
+      </h2>
+      </div>
+      </div>
+      ) : children}
     </AuthContext.Provider>
   )
 }
