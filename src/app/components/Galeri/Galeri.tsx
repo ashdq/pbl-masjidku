@@ -148,50 +148,56 @@ export default function Galeri() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {kegiatan
-              .filter((item) => !!item.gambar_kegiatan)
-              .map((item) => (
+              .filter(item => !!item.gambar_kegiatan)
+              .map((item, index) => (
                 <div
                   key={item.id}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    window.open(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.gambar_kegiatan}`, '_blank');
+                  }}
                   className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl group"
                 >
-                  <div className="relative w-full h-64 sm:h-52 md:h-60 overflow-hidden">
+                  <div className="relative w-full h-64 sm:h-52 md:h-60 overflow-hidden bg-red-500">
                     <Image
                       src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.gambar_kegiatan}`}
                       alt={item.nama_kegiatan}
                       fill
+                      priority={index === 0}
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-in-out"
-                      unoptimized // Consider optimizing images if possible for production
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Add responsive sizes
-                      onClick={(e) => {
-                        e.preventDefault();
-                        window.open(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.gambar_kegiatan}`, "_blank");
-                      }}
+                      unoptimized
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
-                     {/* Overlay for hover effect */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                        <button
-                            onClick={() => handleDownload(item.gambar_kegiatan!, item.nama_kegiatan, item.id)}
-                            className={`px-6 py-2 rounded-full text-sm font-semibold text-white bg-green-700 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-out flex items-center space-x-2 ${
-                            downloading === item.id ? "opacity-60 cursor-not-allowed" : ""
-                            }`}
-                            disabled={downloading === item.id}
-                        >
-                            {downloading === item.id ? (
-                            <>
-                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 0020 12c0-4.418-3.582-8-8-8a7.987 7.987 0 00-6.22 2.766M4 12c0 4.418 3.582 8 8 8a7.987 7.987 0 006.22-2.766M20 12v-5h-.582"></path>
-                                </svg>
-                                <span>Mengunduh...</span>
-                            </>
-                            ) : (
-                            <>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
-                                <span>Unduh Gambar</span>
-                            </>
-                            )}
-                        </button>
+                    
+                    {/* Background overlay */}
+                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
+                    
+                    {/* Button container */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <button
+                        onClick={() => handleDownload(item.gambar_kegiatan!, item.nama_kegiatan, item.id)}
+                        className={`px-6 py-2 rounded-full text-sm font-semibold text-white bg-green-700 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-out flex items-center space-x-2 pointer-events-auto ${
+                          downloading === item.id ? "opacity-60 cursor-not-allowed" : ""
+                        }`}
+                        disabled={downloading === item.id}
+                      >
+                        {/* Button content sama seperti sebelumnya */}
+                        {downloading === item.id ? (
+                          <>
+                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 0020 12c0-4.418-3.582-8-8-8a7.987 7.987 0 00-6.22 2.766M4 12c0 4.418 3.582 8 8 8a7.987 7.987 0 006.22-2.766M20 12v-5h-.582"></path>
+                            </svg>
+                            <span>Mengunduh...</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                            <span>Unduh Gambar</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
                   <div className="p-5 text-center">
