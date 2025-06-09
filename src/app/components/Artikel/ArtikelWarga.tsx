@@ -274,34 +274,215 @@ const ArtikelMenu: React.FC = () => {
             handleSubmit={handleSubmit}
           />
 
-          <main style={styles.grid}>
+          <main
+            style={{
+              width: '100%',
+              maxWidth: 1400,
+              margin: '0 auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 32,
+              alignItems: 'stretch',
+            }}
+          >
             {isLoading ? (
               <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
             ) : error ? (
               <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>{error}</div>
+            ) : articles.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
+              Belum ada artikel. Yuk, tambahkan artikel pertama!
+              </div>
             ) : (
-              articles.map((article) => (
+              <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 24,
+                width: '100%',
+                maxWidth: 900,
+                margin: '0 auto',
+              }}
+              >
+              {articles
+                .sort((a, b) => new Date(b.tanggal_artikel).getTime() - new Date(a.tanggal_artikel).getTime())
+                .map((article) => (
                 <div
                   key={article.id}
-                  style={styles.cardContainer}
+                  style={{
+                  ...styles.cardContainer,
+                  flexDirection: 'row',
+                  minHeight: 180,
+                  alignItems: 'stretch',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 2px 12px rgba(44, 122, 123, 0.10)',
+                  transition: 'box-shadow 0.2s, transform 0.2s',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  background: 'white',
+                  width: '100%',
+                  margin: 0,
+                  padding: 0,
+                  height: 'auto',
+                  overflow: 'visible',
+                  }}
                   onClick={() => setActiveArticle(article.id.toString())}
+                  onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 24px rgba(44, 122, 123, 0.15)')}
+                  onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 2px 12px rgba(44, 122, 123, 0.10)')}
                 >
+                  <div
+                  style={{
+                    width: 180,
+                    minWidth: 180,
+                    height: 180,
+                    background: '#f6f8fa',
+                    overflow: 'hidden',
+                    borderTopLeftRadius: 12,
+                    borderBottomLeftRadius: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                  }}
+                  >
                   <img
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${article.gambar_artikel}`}
+                    src={
+                    article.gambar_artikel.startsWith('http')
+                      ? article.gambar_artikel
+                      : `${process.env.NEXT_PUBLIC_BACKEND_URL}/${article.gambar_artikel}`
+                    }
                     alt={article.judul}
-                    style={styles.thumbnail}
+                    style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    display: 'block',
+                    borderRadius: 0,
+                    transition: 'transform 0.3s',
+                    }}
+                    loading="lazy"
                   />
-                  <div style={styles.cardContent}>
-                    <span style={styles.category}>Artikel</span>
-                    <h3 style={styles.title}>{article.judul}</h3>
-                    <div style={styles.cardActions}>
-                      <span style={styles.readMore}>
-                        Read more <span style={{ fontSize: 16 }}>→</span>
-                      </span>
+                  </div>
+                  <div style={{
+                  ...styles.cardContent,
+                  padding: 24,
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  minWidth: 0,
+                  minHeight: 0,
+                  position: 'relative',
+                  overflow: 'visible',
+                  maxHeight: 'none',
+                  }}>
+                  <div>
+                    <span style={{ ...styles.category, marginBottom: 6, fontSize: 13 }}>Artikel</span>
+                    <h3
+                    style={{
+                      ...styles.title,
+                      fontSize: 20,
+                      margin: '6px 0 12px',
+                      color: '#234e52',
+                      lineHeight: 1.25,
+                      minHeight: 28,
+                      overflow: 'visible',
+                      textOverflow: 'unset',
+                      display: 'block',
+                      WebkitLineClamp: 'unset',
+                      WebkitBoxOrient: 'unset',
+                      whiteSpace: 'normal',
+                    }}
+                    title={article.judul}
+                    >
+                    {article.judul}
+                    </h3>
+                    <div style={{ color: '#888', fontSize: 13, marginBottom: 6 }}>
+                    {new Date(article.tanggal_artikel).toLocaleDateString('id-ID', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                    </div>
+                    <div
+                    style={{
+                      color: '#444',
+                      fontSize: 15,
+                      marginBottom: 10,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      minHeight: 32,
+                      lineHeight: 1.5,
+                      whiteSpace: 'normal',
+                      maxHeight: 48,
+                    }}
+                    >
+                    {article.isi_artikel}
                     </div>
                   </div>
+                  <div style={{
+                    ...styles.cardActions,
+                    marginTop: 16,
+                    borderTop: '1px solid #f1f1f1',
+                    paddingTop: 10,
+                    minHeight: 38,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'white',
+                    borderBottomRightRadius: 12,
+                    borderTopRightRadius: 0,
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    position: 'static',
+                  }}>
+                    <span style={{ ...styles.readMore, fontSize: 15, cursor: 'pointer' }}>
+                    <span style={{
+                      background: '#e6fffa',
+                      color: '#2c7a7b',
+                      borderRadius: 6,
+                      padding: '4px 12px',
+                      fontWeight: 600,
+                      fontSize: 15,
+                      boxShadow: '0 1px 2px rgba(44,122,123,0.04)',
+                      transition: 'background 0.2s',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}>
+                      Baca Selengkapnya <span style={{ fontSize: 18 }}>→</span>
+                    </span>
+                    </span>
+                    <button
+                    title="Hapus artikel"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#e53e3e',
+                      cursor: 'pointer',
+                      padding: 6,
+                      marginLeft: 10,
+                      borderRadius: 8,
+                      transition: 'background 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleDelete(article.id);
+                    }}
+                    >
+                    <Trash2 size={20} />
+                    </button>
+                  </div>
+                  </div>
                 </div>
-              ))
+                ))}
+              </div>
             )}
           </main>
         </>
