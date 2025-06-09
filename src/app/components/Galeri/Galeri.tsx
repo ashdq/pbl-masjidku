@@ -158,7 +158,7 @@ export default function Galeri() {
                   }}
                   className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl group"
                 >
-                  <div className="relative w-full h-64 sm:h-52 md:h-60 overflow-hidden bg-red-500">
+                  <div className="relative w-full h-64 sm:h-52 md:h-60 overflow-hidden">
                     <Image
                       src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.gambar_kegiatan}`}
                       alt={item.nama_kegiatan}
