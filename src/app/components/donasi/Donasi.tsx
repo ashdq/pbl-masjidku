@@ -474,35 +474,40 @@ const Donasi = () => {
         {donasiStats.monthly_statistics && donasiStats.monthly_statistics.length > 0 && (
           <div className="mb-8">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Visualisasi Donasi Bulanan</h3>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <Bar 
-                data={chartData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      position: 'top',
-                    },
-                    tooltip: {
-                      callbacks: {
-                        label: function(context) {
-                          return formatRupiah(context.raw as number);
-                        }
-                      }
-                    }
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                      ticks: {
-                        callback: function(value) {
-                          return formatRupiah(value as number).replace('Rp', '').trim();
-                        }
-                      }
-                    }
-                  }
-                }}
-              />
+            <div className="w-full max-w-full overflow-x-auto">
+              <div className="min-w-[300px] sm:min-w-[400px] md:min-w-[600px]">
+          <Bar
+            data={chartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+            callbacks: {
+              label: (context) => formatRupiah(context.raw as number),
+            },
+                },
+              },
+              scales: {
+                y: {
+            beginAtZero: true,
+            ticks: {
+              callback: (value) =>
+                formatRupiah(value as number).replace('Rp', '').trim(),
+              font: { size: 10 },
+            },
+            grid: { display: false },
+                },
+                x: {
+            ticks: { font: { size: 10 } },
+            grid: { display: false },
+                },
+              },
+            }}
+            height={220}
+          />
+              </div>
             </div>
           </div>
         )}
