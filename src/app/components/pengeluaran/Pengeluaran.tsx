@@ -36,6 +36,8 @@ const Pengeluaran: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showTambahForm, setShowTambahForm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const canManagePengeluaran = user?.roles?.includes('admin') || user?.roles?.includes('takmir');
 
@@ -178,6 +180,47 @@ const Pengeluaran: React.FC = () => {
     doc.save('laporan_pengeluaran.pdf');
   };
 
+  // Handler untuk submit form tambah pengeluaran
+  const handleTambahPengeluaran = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormError(null);
+
+    const form = e.currentTarget;
+    const keperluan = (form.keperluan as HTMLInputElement).value.trim();
+    const jumlah_pengeluaran = (form.jumlah_pengeluaran as HTMLInputElement).value.trim();
+    const tanggal = (form.tanggal as HTMLInputElement).value.trim();
+
+    // Validasi frontend
+    if (!keperluan || !jumlah_pengeluaran || !tanggal) {
+      setFormError("Semua field wajib diisi.");
+      return;
+    }
+
+    const formData = new FormData(form);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Token autentikasi tidak ditemukan');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pengeluaran`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+        body: formData,
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Gagal menambah pengeluaran');
+      }
+      setShowTambahForm(false);
+      setFormError(null);
+      fetchData();
+      form.reset();
+    } catch (error: any) {
+      setFormError(error.message || 'Terjadi kesalahan saat menambah pengeluaran');
+    }
+  };
+
   if (!canManagePengeluaran) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -227,7 +270,7 @@ const Pengeluaran: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900">Ringkasan Keuangan Masjid</h2>
           <div className="flex space-x-2">
             <button
-              onClick={() => router.push('/pengeluaran/tambah')}
+              onClick={() => setShowTambahForm((prev) => !prev)}
               className="flex items-center px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
             >
               <FiPlus className="mr-1" /> Tambah Pengeluaran
@@ -271,6 +314,86 @@ const Pengeluaran: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Tambah Pengeluaran Form */}
+      {showTambahForm && (
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 max-w-2xl mx-auto mt-2">
+          <h3 className="text-2xl font-bold mb-6 text-green-700 flex items-center gap-2">
+            <FiPlus className="text-green-600" /> Tambah Pengeluaran
+          </h3>
+          {formError && (
+            <div className="mb-4 px-4 py-3 rounded bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+              <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+              </svg>
+              {formError}
+            </div>
+          )}
+          <form onSubmit={handleTambahPengeluaran} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Keperluan <span className="text-red-500">*</span></label>
+              <input
+                name="keperluan"
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700 transition"
+                placeholder="Contoh: Pembelian karpet"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Jumlah Pengeluaran <span className="text-red-500">*</span></label>
+              <input
+                name="jumlah_pengeluaran"
+                type="number"
+                min={1}
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700 transition"
+                placeholder="Contoh: 500000"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Tanggal <span className="text-red-500">*</span></label>
+              <input
+                name="tanggal"
+                type="date"
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700 transition"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
+              <textarea
+                name="deskripsi"
+                rows={2}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700 transition"
+                placeholder="Keterangan tambahan (opsional)"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Nota (opsional)</label>
+              <input
+                name="nota"
+                type="file"
+                accept="image/*,application/pdf"
+                className="w-full text-gray-700"
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="submit"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition"
+              >
+                Simpan
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowTambahForm(false); setFormError(null); }}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg transition"
+              >
+                Batal
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 w-full">  
