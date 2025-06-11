@@ -11,6 +11,7 @@ import PengelolaanKegiatan from '../../components/kegiatan/Kegiatan';
 import LaporanDonasi from '../../components/donasi/LaporanDonasi';
 import Pengeluaran from '../../components/pengeluaran/Pengeluaran';
 import LaporanAspirasi from '../../components/Aspirasi/LaporanAspirasi';
+import Artikel from '../../components/Artikel/ArtikelPreview';
 import Profile from '../../components/profile/profile';
 
 export default function AdminDashboard() {
@@ -62,6 +63,8 @@ export default function AdminDashboard() {
         return <Pengeluaran />;
       case "Laporan Aspirasi":
         return <LaporanAspirasi />;
+      case "Artikel":
+        return <Artikel />;
       case "Profile":
         return <Profile />;
       default:
@@ -85,7 +88,7 @@ export default function AdminDashboard() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {["Overview", "Laporan Keuangan", "Laporan Donasi", "Laporan Aspirasi", "Pengelolaan Kegiatan", "Manajemen Pengguna", "Profile"].map((tab) => (
+        {["Overview", "Laporan Keuangan", "Laporan Donasi", "Laporan Aspirasi", "Pengelolaan Kegiatan", "Manajemen Pengguna", "Artikel", "Profile"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 rounded-lg transition whitespace-nowrap ${
