@@ -59,6 +59,7 @@ export default function LoginPage() {
       }
 
       localStorage.setItem('token', data.access_token);
+      localStorage.setItem('role', data.user.roles);
       await login(data.user, data.access_token);
       router.push('/dashboard/' + data.user.roles);
     } catch (error: any) {
