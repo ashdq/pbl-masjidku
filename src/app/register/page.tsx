@@ -187,8 +187,10 @@ export default function RegisterPage() {
                     autoComplete="new-password"
                     required
                     minLength={8}
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$"
+                    title="Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, serta angka"
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-800 transition-all duration-200"
-                    placeholder="Minimal 8 karakter"
+                    placeholder="Minimal 8 karakter, dengan huruf besar, kecil, dan angka"
                     value={formData.password}
                     onChange={handleChange}
                   />
@@ -212,6 +214,8 @@ export default function RegisterPage() {
                     autoComplete="new-password"
                     required
                     minLength={8}
+                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$"
+                    title="Password harus sama dan memenuhi syarat (huruf besar, kecil, dan angka)"
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-800 transition-all duration-200"
                     placeholder="Konfirmasi password Anda"
                     value={formData.password_confirmation}
