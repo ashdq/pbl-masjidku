@@ -368,13 +368,37 @@ const Pengeluaran: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Nota (opsional)</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Nota <span className="text-gray-400">(opsional)</span>
+              </label>
               <input
-                name="nota"
-                type="file"
-                accept="image/*,application/pdf"
-                className="w-full text-gray-700"
+              name="nota"
+              type="file"
+              accept="image/*,application/pdf"
+              className="w-full text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-50 file:text-green-700 hover:file:bg-green-100 transition"
+              aria-label="Unggah nota (opsional)"
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (file) {
+                const allowedTypes = [
+                  "image/jpeg",
+                  "image/png",
+                  "image/jpg",
+                  "application/pdf"
+                ];
+                if (!allowedTypes.includes(file.type)) {
+                  alert("File harus berupa gambar (JPG/PNG) atau PDF.");
+                  e.target.value = "";
+                } else if (file.size > 2 * 1024 * 1024) {
+                  alert("Ukuran file maksimal 2MB.");
+                  e.target.value = "";
+                }
+                }
+              }}
               />
+              <p className="text-xs text-gray-500 mt-1">
+              Format: JPG, PNG, atau PDF. Maksimal 2MB.
+              </p>
             </div>
             <div className="flex gap-3 pt-2">
               <button
