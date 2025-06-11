@@ -220,38 +220,6 @@ const Donasi = () => {
     }));
   };
 
-  const handleExport = async (format: 'csv' | 'pdf') => {
-    try {
-      const token = localStorage.getItem('token');
-      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-      
-      const response = await fetch(`${baseUrl}/api/donasi/export?format=${format}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to export data');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `donasi-${new Date().toISOString().split('T')[0]}.${format}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      
-      setSuccess(`Data exported successfully as ${format.toUpperCase()}`);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to export data');
-    }
-  };
-
   const formatRupiah = (angka: number): string => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -422,24 +390,6 @@ const Donasi = () => {
             Terakhir diperbarui: {new Date(lastUpdated).toLocaleString('id-ID')}
           </div>
         )}
-
-        {/* Export Buttons */}
-        <div className="flex justify-end mb-4 space-x-2">
-          <button
-            onClick={() => handleExport('csv')}
-            className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-          >
-            <FiDownload className="mr-2 h-4 w-4" />
-            Export CSV
-          </button>
-          <button
-            onClick={() => handleExport('pdf')}
-            className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-          >
-            <FiDownload className="mr-2 h-4 w-4" />
-            Export PDF
-          </button>
-        </div>
 
         {/* Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
