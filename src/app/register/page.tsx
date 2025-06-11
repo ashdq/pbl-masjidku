@@ -127,10 +127,21 @@ export default function RegisterPage() {
                     name="name"
                     type="text"
                     required
+                    pattern="^[A-Za-zÀ-ÿ\s]+$"
+                    title="Nama hanya boleh berisi huruf dan spasi"
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm text-gray-800 transition-all duration-200"
                     placeholder="Masukkan nama lengkap Anda"
                     value={formData.name}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Hanya izinkan huruf dan spasi
+                      if (/^[A-Za-zÀ-ÿ\s]*$/.test(value)) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: value
+                        }));
+                      }
+                    }}
                   />
                 </div>
               </div>
